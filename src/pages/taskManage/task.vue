@@ -68,13 +68,11 @@
           <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
           <el-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="156">
             <template slot-scope="scope">
-              <span v-if="scope.row.AgainTaskState!=1">
-                <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
-              </span>
-              <span v-if="scope.row.AgainTaskState==1">
-                <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
-                <div class="danger fz10">追加任务</div>
-              </span>
+              <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
+              <p>
+                <span v-if="scope.row.AgainTaskState==1"><span class="danger fz10">追加任务</span></span>
+                <span v-if="scope.row.NoComment==1"><span class="danger fz10">免评单</span></span>
+              </p>
             </template>
           </el-table-column>
           <el-table-column prop="OrderProductPictures" label="产品图" align="center">
@@ -196,6 +194,14 @@
         <el-form-item label='购买单号' prop="AmazonNumber">
           <el-input v-model='buyForm.AmazonNumber'></el-input>
         </el-form-item>
+        <el-form-item label='购买截图' prop="image">
+          <el-upload class="avatar-uploader" name="Image" action="/api/Payment/GetProductPictures" :show-file-list="false"
+            :on-success="handleAvatarSuccessBuy" :on-error="handleError" :before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <el-input v-show="false" v-model='buyForm.Image'></el-input>
+        </el-form-item>
         <div v-if="taskFormView.ServiceType==1">
           <el-form-item label='产品金额' prop="AmazonProductPrice">
             <el-input v-model='buyForm.AmazonProductPrice'>
@@ -295,7 +301,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="commentSubmit">确 定</el-button>
+        <el-button type="danger" @click="commentSubmit(1)" style="position: absolute;left: 15px">免 评</el-button>
+        <el-button type="primary" @click="commentSubmit(0)">确 定</el-button>
         <el-button @click="closeCommentModal">取 消</el-button>
       </div>
     </el-dialog>
@@ -461,6 +468,11 @@
               <span>￥</span> <span>{{view.OrderUnitPriceSerCharge}}</span>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label='购买截图：' prop="BuyImage">
+              <img style="max-width: 80%;" v-show="view.BuyImage" :src="view.BuyImage" />
+            </el-form-item>
+          </el-col>
         </el-row>
         <p class="info-title">评价信息</p>
         <el-row>
@@ -471,7 +483,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label='评价截图：' prop="ProductImage">
-              <img style="max-width: 50%;" v-show="view.ProductImage" :src="view.ProductImage" />
+              <img style="max-width: 80%;" v-show="view.ProductImage" :src="view.ProductImage" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -480,7 +492,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label='交易截图：' prop="DealIamge">
-                <img style="max-width: 50%;" v-show="view.DealIamge" :src="view.DealIamge" />
+                <img style="max-width: 80%;" v-show="view.DealIamge" :src="view.DealIamge" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -593,7 +605,8 @@
           Freight: '',
           Taxation: '',
           Other: '',
-          Total: ''
+          Total: '',
+          Image: ''
         },
         //设置日期控件只可选择今天及以后的时间
         pickerOptions: {
@@ -886,7 +899,8 @@
                 AmazonNumber: _this.buyForm.AmazonNumber,
                 Type: ServiceType,
                 TaskId: _this.taskId,
-                Id: userId
+                Id: userId,
+                Image: _this.buyForm.Image
               }
             }
             //核算总金额(总额+增值服+服务费)
@@ -912,8 +926,11 @@
           Freight: '',
           Taxation: '',
           Other: '',
-          Total: ''
+          Total: '',
+          Image: ''
         }
+        _this.imageUrl = ''
+
       },
 
       // 评价弹窗
@@ -932,29 +949,54 @@
       },
 
       // 评价
-      commentSubmit() {
+      commentSubmit(val) {
         let _this = this
         let userId = sessionStorage.getItem('userId')
         let link = _this.commentForm.Link
         let image = _this.commentForm.Image
-        if (link == '' && image == '') {
-          this.$message.error('评价链接和评价截图必须至少填写一项！')
-        } else {
-          let params = {
-            Id: _this.taskId,
-            BackUserId: userId,
-            Link: link,
-            Image: image
+        let params = {
+          Id: _this.taskId,
+          BackUserId: userId,
+          Link: link,
+          Image: image,
+          NoComment: val
+        }
+        // 如果是需要评论的单,评价链接和评论图片必须二选一填写;如果是免评单不要填写评价链接,评论图片可填可不填.(1为免评)
+        if (val != 1) {
+          if (link == '' && image == '') {
+            this.$message.error('评价链接和评价截图必须至少填写一项！')
+          } else {
+            taskComment(params).then(res => {
+              _this.closeCommentModal()
+              _this.getAllData()
+              _this.getTaskStateNum()
+            }).catch((e) => {})
           }
-          taskComment(params).then(res => {
-            _this.closeCommentModal()
-            _this.getAllData()
-            _this.getTaskStateNum()
-          }).catch((e) => {})
+        } else {
+          if (link != '') {
+            this.$message.error('免评单请不要填写评价链接！')
+          } else {
+            taskComment(params).then(res => {
+              _this.closeCommentModal()
+              _this.getAllData()
+              _this.getTaskStateNum()
+            }).catch((e) => {})
+          }
         }
       },
 
       // 图片上传
+
+      //购买图片上传成功
+      handleAvatarSuccessBuy(res, file) {
+        if (res.Data != '') {
+          this.buyForm.Image = res.Data
+        }
+        this.imageUrl = URL.createObjectURL(file.raw);
+        this.$message.success('图片上传成功！')
+      },
+
+      //评论图片上传成功
       handleAvatarSuccess(res, file) {
         if (res.Data != '') {
           this.commentForm.Image = res.Data
@@ -962,6 +1004,7 @@
         this.imageUrl = URL.createObjectURL(file.raw);
         this.$message.success('图片上传成功！')
       },
+
       handleError(res) {
         this.$message.error('图片上传失败！')
       },

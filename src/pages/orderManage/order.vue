@@ -634,6 +634,8 @@
         _this.taskModal = false
         _this.tableData2 = []
         _this.checkBoxData2 = []
+        _this.currentPage2 = 1
+        _this.pageSize2 = 10
       },
 
       //任务信息选中行
