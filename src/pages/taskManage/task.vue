@@ -25,7 +25,7 @@
       </el-collapse-transition>
       <div class="mb20">
         <el-button type="primary" size="small" v-if="menuBtnShow" :disabled="disabledEditFee" @click="editModalShow">
-          <i class="el-icon-edit-outline"></i> 修改费率</el-button>
+          <i class="el-icon-edit-outline"></i> 修改【经销商】服务费和汇率</el-button>
         <el-button type="danger" size="small" v-if="menuBtnShow" :disabled="disabledOut" @click="userModalShow">
           <i class="el-icon-place"></i> 外派</el-button>
         <el-button type="success" size="small" v-if="menuBtnShow" :disabled="disabled" @click="TaskAgainShow">
@@ -573,7 +573,6 @@
         disabledMore: true, //多项禁用
         disabledEditFee: true, //修改费率禁用
         disabledOut: true, //外派禁用
-        disabledIn: true, //分配任务禁用
         tableData: [],
         checkBoxData: [], //选中数据
         menuBtnShow: false, //是否显示列表上方菜单按钮
@@ -1117,46 +1116,24 @@
         }
         //任务状态
         let state = val.map(item => item.TaskState)
-        let dis1 = false
-        let dis2 = false
+        let dis = false
         for (let x in state) {
           //如果状态不是待购买
           if (state[x] != 2) {
-            dis1 = true
-          }
-          //如果状态不是待分配
-          if (state[x] != 1) {
-            dis2 = true
-          }
-        }
-        //是否为追加任务
-        let isAgain = val.map(item => item.AgainTaskState)
-        let dis3 = false
-        for (let x in isAgain) {
-          if (isAgain[x] == 1) {
-            dis3 = true
+            dis = true
           }
         }
         if (checkNum > 0) {
-          if (dis1 == false) {
+          if (dis == false) {
+            _this.disabledEditFee = false
             _this.disabledOut = false
           } else {
-            _this.disabledOut = true
-          }
-          if (dis1 == false && dis3 == false) {
-            _this.disabledEditFee = false
-          } else {
             _this.disabledEditFee = true
-          }
-          if (dis2 == false) {
-            _this.disabledIn = false
-          } else {
-            _this.disabledIn = true
+            _this.disabledOut = true
           }
         } else {
           _this.disabledEditFee = true
           _this.disabledOut = true
-          _this.disabledIn = true
         }
       },
 

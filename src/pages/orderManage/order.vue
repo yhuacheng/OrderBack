@@ -25,7 +25,7 @@
       </el-collapse-transition>
       <div class="mb20">
         <el-button type="primary" size="small" :disabled="disabledEditFee" @click="editModalShow">
-          <i class="el-icon-edit-outline"></i> 修改费率</el-button>
+          <i class="el-icon-edit-outline"></i> 修改【客户】服务费和汇率</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
         <div class="tagMenu">
           <el-badge :value="all" type="success" class="item">
