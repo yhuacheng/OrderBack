@@ -10,7 +10,7 @@
             <el-row>
               <el-col :xs="24" :span="7">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码" size="small"></el-input>
+                  <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码/购买单号" size="small"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="17">
