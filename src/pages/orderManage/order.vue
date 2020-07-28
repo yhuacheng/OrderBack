@@ -26,6 +26,10 @@
       <div class="mb20">
         <el-button type="primary" size="small" :disabled="disabledEditFee" @click="editModalShow">
           <i class="el-icon-edit-outline"></i> 修改【客户】服务费和汇率</el-button>
+        <el-button v-if="searchForm.state==1" type="success" size="small" @click="orderConfirmMore(1)" :disabled="disabledMore">
+          <i class="el-icon-circle-check"></i> 批量确认</el-button>
+        <el-button v-if="searchForm.state==1" type="danger" size="small" @click="orderConfirmMore(2)" :disabled="disabledMore">
+          <i class="el-icon-circle-close"></i> 批量取消</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
         <div class="tagMenu">
           <el-badge :value="all" type="success" class="item">
@@ -383,6 +387,7 @@
     orderList,
     orderStateNum,
     orderState,
+    orderStateMore,
     orderTask,
     userList,
     orderTaskBind,
@@ -532,6 +537,33 @@
         orderState(params).then((res) => {
           _this.getAllData()
           _this.getOrderStateNum()
+        }).catch(() => {})
+      },
+
+
+      //批量确认与批量取消
+      orderConfirmMore(val) {
+        let _this = this
+        let txt = ''
+        if (val == 1) {
+          txt = '接单'
+        }
+        if (val == 2) {
+          txt = '取消'
+        }
+        let ids = _this.checkBoxData.map(item => item.Id) //选中的数据
+        let num = _this.checkBoxData.length //选中的数量
+        _this.$confirm('确认 ' + txt + ' 选中的【' + num + '】条订单吗？', '信息提示', {
+          type: 'warning'
+        }).then(() => {
+          let params = {
+            Id: ids,
+            Type: val
+          }
+          orderStateMore(params).then((res) => {
+            _this.getAllData()
+            _this.getOrderStateNum()
+          })
         }).catch(() => {})
       },
 

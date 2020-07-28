@@ -30,6 +30,8 @@
           <i class="el-icon-place"></i> 外派</el-button>
         <el-button type="success" size="small" v-if="menuBtnShow" :disabled="disabled" @click="TaskAgainShow">
           <i class="el-icon-circle-plus-outline"></i> 追加任务</el-button>
+        <el-button v-if="btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7" type="danger"
+          size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i> 批量取消</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
         <div class="tagMenu mt20 mb20" style="float: none">
           <el-badge :value="all" type="success" class="item">
@@ -553,6 +555,7 @@
     rateList,
     taskBuy,
     taskState,
+    taskStateMore,
     taskComment,
     taskView,
     taskFeeEdit,
@@ -823,6 +826,24 @@
             Id: row.Id
           }
           taskState(params).then((res) => {
+            _this.getAllData()
+            _this.getTaskStateNum()
+          })
+        }).catch(() => {})
+      },
+
+      //批量任务取消
+      changeStateMore() {
+        let _this = this
+        let ids = _this.checkBoxData.map(item => item.Id) //选中的数据
+        let num = _this.checkBoxData.length //选中的数量
+        _this.$confirm('确认取消选中的【' + num + '】条任务吗？', '信息提示', {
+          type: 'warning'
+        }).then(() => {
+          let params = {
+            Id: ids
+          }
+          taskStateMore(params).then((res) => {
             _this.getAllData()
             _this.getTaskStateNum()
           })

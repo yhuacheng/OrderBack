@@ -1,6 +1,6 @@
 import {
-	get,
-	post
+  get,
+  post
 } from './http'
 
 export const login = (params) => post('/api/Login/UserLogin', params) //登录
@@ -55,6 +55,7 @@ export const payTypeState = (params) => post('/api/Payment/ChangeState', params)
 export const orderList = (params) => get('/api/Order/GetCustomerOrderList', params) //订单列表
 export const orderStateNum = (params) => post('/api/Order/GetState', params) //订单不同状态下的数量
 export const orderState = (params) => post('/api/Order/ChangeOrderState', params) //订单确认/取消
+export const orderStateMore = (params) => post('/api/Order/BatchOrderChangeState', params) //订单批量确认/取消
 export const orderTask = (params) => get('/api/Order/GetTask', params) //订单拆分的任务列表
 export const orderTaskBind = (params) => post('/api/Order/AssignedTaks', params) //订单任务分配
 export const orderFeeEdit = (params) => post('/api/Order/ChangeOrderInformation', params) //订单服务费汇率修改
@@ -63,6 +64,7 @@ export const taskList = (params) => get('/api/Task/GetTaskList', params) //任�
 export const taskStateNum = (params) => post('/api/Task/GetState', params) //任务不同状态下的数量
 export const taskBuy = (params) => post('/api/Task/ChangeBuyingTwo', params) //确认购买
 export const taskState = (params) => post('/api/Task/ChangeTaskCancel', params) //任务取消
+export const taskStateMore = (params) => post('/api/Task/BatchChangeTaskState', params) //批量任务取消
 export const taskComment = (params) => post('/api/Task/ChangeTaskFour', params) //任务评价
 export const taskView = (params) => get('/api/Task/TaskDetails', params) //任务详情
 export const taskFeeEdit = (params) => post('/api/Task/ChangeTaskServicechargeAndExchangeRate', params) //任务服务费汇率修改
