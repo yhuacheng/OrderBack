@@ -34,6 +34,8 @@
         <el-table-column prop="RcurrencySymbol" label="货币符号" align="center"></el-table-column>
         <el-table-column prop="Rexchangerate" label="货币汇率" align="center"></el-table-column>
         <el-table-column prop="CcountryName" label="关联国家" align="center"></el-table-column>
+        <el-table-column prop="handFee" label="官方手续费率" align="center"></el-table-column>
+        <el-table-column prop="handMoney" label="固定手续费用" align="center"></el-table-column>
       </el-table>
       <div class="table-foot">
         <div></div>
@@ -63,6 +65,12 @@
           <el-select style="width: 100%;" v-model="editForm.CountryId" filterable placeholder="请选择国家">
             <el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label='官方手续费率' prop='HandFee'>
+          <el-input v-model='editForm.HandFee'></el-input>
+        </el-form-item>
+        <el-form-item label='固定手续费用' prop='HandMoney'>
+          <el-input v-model='editForm.HandMoney'></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -138,6 +146,28 @@
             message: '请选择关联国家',
             trigger: 'blur'
           }],
+          HandFee: [{
+              required: true,
+              message: '请输官方手续费率',
+              trigger: 'blur'
+            },
+            {
+              pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+              message: '费率格式不正确',
+              trigger: ['blur']
+            }
+          ],
+          HandMoney: [{
+              required: true,
+              message: '请输固定手续费用',
+              trigger: 'blur'
+            },
+            {
+              pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+              message: '固定费用格式不正确',
+              trigger: ['blur']
+            }
+          ],
         }
       }
     },
@@ -149,9 +179,9 @@
       getCountryData() {
         let _this = this
         let params = {
-          country:'',
-          pageNum:1,
-          pagesize:100000000
+          country: '',
+          pageNum: 1,
+          pagesize: 100000000
         }
         countryList(params).then(res => {
           _this.countryData = res.list
@@ -215,7 +245,9 @@
           Currencynumber: data.RcurrencyNumber,
           CurrencySymbol: data.RcurrencySymbol,
           Exchangerate: data.Rexchangerate,
-          CountryId: data.cId
+          CountryId: data.cId,
+          HandFee: data.handFee,
+          HandMoney: data.handMoney
         }
       },
 

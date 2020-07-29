@@ -226,21 +226,33 @@
               <template slot="prepend">{{symbol}}</template>
             </el-input>
           </el-form-item>
-          <el-form-item label='汇率'>
-            <span class="ml10">{{rate}}</span>
+          <el-form-item label='官方手续费率'>
+            <el-input v-model='handFee' :disabled="true">
+              <template slot="prepend">{{symbol}}</template>
+            </el-input>
           </el-form-item>
-          <el-form-item label='总额' prop="Total" class="disabled-font-color">
+          <el-form-item label='固定手续费用'>
+            <el-input v-model='handMoney' :disabled="true">
+              <template slot="prepend">{{symbol}}</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label='汇率'>
+            <el-input v-model='rate' :disabled="true">
+              <template slot="prepend">{{symbol}}</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label='总额' class="disabled-font-color">
             <el-input v-model='totalValue' :disabled="true">
               <template slot="prepend" class="danger">￥</template>
             </el-input>
           </el-form-item>
         </div>
-        <el-form-item label='增值费' prop="addFee" class="disabled-font-color">
+        <el-form-item label='增值费' class="disabled-font-color">
           <el-input v-model='addFee' :disabled="true">
             <template slot="prepend" class="danger">￥</template>
           </el-input>
         </el-form-item>
-        <el-form-item label='服务费' prop="serviceFei" class="disabled-font-color">
+        <el-form-item label='服务费' class="disabled-font-color">
           <el-input v-model='serviceFei' :disabled="true">
             <template slot="prepend" class="danger">￥</template>
           </el-input>
@@ -619,11 +631,12 @@
         },
         taskId: '', //选中的任务id
         rateData: [], //汇率数据
-        currency: '', //货币
         symbol: '', //货币符号
         rate: '', //货币汇率
         addFee: '', //增值费
         serviceFei: '', //服务费
+        handFee: '', //官方手续费率
+        handMoney: '', //官方固定费率
         btnShow: false, //判断是否显示取消按钮
         Rules: {
           BuyingTime: [{
@@ -715,9 +728,11 @@
       this.getRateData()
     },
     computed: {
+      //合计
       totalValue: function() {
-        return ((Number(this.buyForm.AmazonProductPrice) + Number(this.buyForm.Freight) + Number(this.buyForm.Taxation) +
-          Number(this.buyForm.Other)) * Number(this.rate)).toFixed(2)
+        let all = (Number(this.buyForm.AmazonProductPrice) + Number(this.buyForm.Freight) + Number(this.buyForm.Taxation) +
+          Number(this.buyForm.Other)) * (1 + Number(this.handFee)) + Number(this.handMoney)
+        return (all * Number(this.rate)).toFixed(2)
       }
     },
     methods: {
@@ -869,7 +884,8 @@
         for (let x in _this.rateData) {
           if (Number(_this.rateData[x].cId) == Number(countryId)) {
             _this.symbol = _this.rateData[x].RcurrencySymbol //货币符号
-            _this.currency = _this.rateData[x].RcurrencyName //货币名称
+            _this.handFee = _this.rateData[x].handFee //官方手续费率
+            _this.handMoney = _this.rateData[x].handMoney //官方固定费用
           }
         }
       },
