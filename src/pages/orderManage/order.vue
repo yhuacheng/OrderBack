@@ -70,8 +70,8 @@
           </el-table-column>
           <el-table-column prop="ServiceType" label="订单类型" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.ServiceType==1">见单返</span>
-              <span v-if="scope.row.ServiceType==2">评后返</span>
+              <span v-if="scope.row.ServiceType==1">评后返（代返）</span>
+              <span v-if="scope.row.ServiceType==2">评后返（自返）</span>
             </template>
           </el-table-column>
           <el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
@@ -261,8 +261,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label='订单类型：' prop="ServiceType">
-              <span v-if="view.ServiceType==1">见单返</span>
-              <span v-if="view.ServiceType==2">评后返</span>
+              <span v-if="view.ServiceType==1">评后返（代返）</span>
+              <span v-if="view.ServiceType==2">评后返（自返）</span>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -442,7 +442,7 @@
         editForm: {
           fee: '',
           rate: '',
-          type: 1 //订单类型(1:见单返，2:评后返)
+          type: 1 //订单类型(1:评后返（代返），2:评后返（自返）)
         },
         viewModal: false,
         view: {},

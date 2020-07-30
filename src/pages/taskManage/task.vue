@@ -85,8 +85,8 @@
           </el-table-column>
           <el-table-column prop="ServiceType" label="任务类型" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.ServiceType==1">见单返</span>
-              <span v-if="scope.row.ServiceType==2">评后返</span>
+              <span v-if="scope.row.ServiceType==1">评后返（代返）</span>
+              <span v-if="scope.row.ServiceType==2">评后返（自返）</span>
             </template>
           </el-table-column>
           <el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
@@ -163,8 +163,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label='任务类型：' prop="ServiceType">
-              <span v-show="taskFormView.ServiceType==1">见单返</span>
-              <span v-show="taskFormView.ServiceType==2">评后返</span>
+              <span v-show="taskFormView.ServiceType==1">评后返（代返）</span>
+              <span v-show="taskFormView.ServiceType==2">评后返（自返）</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -275,8 +275,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label='任务类型：' prop="ServiceType">
-              <span v-show="taskFormView.ServiceType==1">见单返</span>
-              <span v-show="taskFormView.ServiceType==2">评后返</span>
+              <span v-show="taskFormView.ServiceType==1">评后返（代返）</span>
+              <span v-show="taskFormView.ServiceType==2">评后返（自返）</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -358,8 +358,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label='任务类型：' prop="ServiceType">
-              <span v-if="view.ServiceType==1">见单返</span>
-              <span v-if="view.ServiceType==2">评后返</span>
+              <span v-if="view.ServiceType==1">评后返（代返）</span>
+              <span v-if="view.ServiceType==2">评后返（自返）</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
