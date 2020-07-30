@@ -301,8 +301,11 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-form :model='commentForm' ref='commentForm' label-width='120px' status-icon>
+      <el-form :model='commentForm' ref='commentForm' :rules="commentRules" label-width='120px' status-icon>
         <p class="info-title">评价信息</p>
+        <el-form-item label='返款账号' prop="PPaccount">
+          <el-input v-model='commentForm.PPaccount'></el-input>
+        </el-form-item>
         <el-form-item label='评价链接' prop="Link">
           <el-input v-model='commentForm.Link'></el-input>
         </el-form-item>
@@ -492,6 +495,11 @@
         <p class="info-title">评价信息</p>
         <el-row>
           <el-col :span="24">
+            <el-form-item label='返款账号：' prop="PayAccount">
+              <span>{{view.PayAccount}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item label='评价链接：' prop="ProductLink">
               <span>{{view.ProductLink}}</span>
             </el-form-item>
@@ -676,11 +684,19 @@
             trigger: ['blur']
           }],
         },
+        commentRules: {
+          PPaccount: [{
+            required: true,
+            message: '请输入返款账号',
+            trigger: 'blur'
+          }]
+        },
         commentModal: false,
         imageUrl: '',
         commentForm: {
           Link: '',
-          Image: ''
+          Image: '',
+          PPaccount: ''
         },
         viewModal: false,
         view: {},
@@ -982,6 +998,10 @@
         _this.taskFormView.ProductName = row.ProductName
         _this.taskFormView.ProductPrice = row.ProductPrice
         _this.taskId = row.Id
+        _this.commentForm.Link = row.ProductLink
+        _this.commentForm.Image = row.ProductImage
+        _this.imageUrl = row.ProductImage
+        _this.commentForm.PPaccount = row.PayAccount
         _this.getRateInfo(row.CountryId)
       },
 
@@ -991,35 +1011,41 @@
         let userId = sessionStorage.getItem('userId')
         let link = _this.commentForm.Link
         let image = _this.commentForm.Image
+        let PPaccount = _this.commentForm.PPaccount
         let params = {
           Id: _this.taskId,
           BackUserId: userId,
           Link: link,
           Image: image,
+          PayAccount: PPaccount,
           NoComment: val
         }
-        // 如果是需要评论的单,评价链接和评论图片必须二选一填写;如果是免评单不要填写评价链接,评论图片可填可不填.(1为免评)
-        if (val != 1) {
-          if (link == '' && image == '') {
-            this.$message.error('评价链接和评价截图必须至少填写一项！')
-          } else {
-            taskComment(params).then(res => {
-              _this.closeCommentModal()
-              _this.getAllData()
-              _this.getTaskStateNum()
-            }).catch((e) => {})
+        _this.$refs.commentForm.validate((valid) => {
+          if (valid) {
+            // 如果是需要评论的单,评价链接和评论图片必须二选一填写;如果是免评单不要填写评价链接,评论图片可填可不填.(1为免评)
+            if (val != 1) {
+              if (link == '' && image == '') {
+                this.$message.error('评价链接和评价截图必须至少填写一项！')
+              } else {
+                taskComment(params).then(res => {
+                  _this.closeCommentModal()
+                  _this.getAllData()
+                  _this.getTaskStateNum()
+                }).catch((e) => {})
+              }
+            } else {
+              if (link != '') {
+                this.$message.error('免评单请不要填写评价链接！')
+              } else {
+                taskComment(params).then(res => {
+                  _this.closeCommentModal()
+                  _this.getAllData()
+                  _this.getTaskStateNum()
+                }).catch((e) => {})
+              }
+            }
           }
-        } else {
-          if (link != '') {
-            this.$message.error('免评单请不要填写评价链接！')
-          } else {
-            taskComment(params).then(res => {
-              _this.closeCommentModal()
-              _this.getAllData()
-              _this.getTaskStateNum()
-            }).catch((e) => {})
-          }
-        }
+        })
       },
 
       // 图片上传
