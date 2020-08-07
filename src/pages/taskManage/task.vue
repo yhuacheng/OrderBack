@@ -13,7 +13,15 @@
                   <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码/购买单号" size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="17">
+              <el-col :xs="24" :span="5">
+                <el-form-item label="国家">
+                  <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
+                    <el-option value="0" label="全部国家"></el-option>
+                    <el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="12">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -118,6 +126,7 @@
           <el-table-column prop="Name" label="操作员" align="center"></el-table-column>
           <el-table-column prop="Name1" label="外派员" align="center"></el-table-column>
           <el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
+          <el-table-column prop="BuyTime" label="购买时间" align="center"></el-table-column>
           <el-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></el-table-column>
           <el-table-column prop="TaskState" label="状态" align="center">
             <template slot-scope="scope">
@@ -191,6 +200,9 @@
       </el-form>
       <el-form :model='buyForm' ref='buyForm' :rules='Rules' label-width='120px' status-icon>
         <p class="info-title">购买信息</p>
+        <el-form-item label='返款账号' prop="PayAccount">
+          <el-input v-model='buyForm.PayAccount'></el-input>
+        </el-form-item>
         <el-form-item label='购买时间' prop="BuyingTime">
           <el-date-picker v-model="buyForm.BuyingTime" type="datetime" style="width: 100%"></el-date-picker>
         </el-form-item>
@@ -204,6 +216,9 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <el-input v-show="false" v-model='buyForm.Image'></el-input>
+        </el-form-item>
+        <el-form-item label='购买备注' prop="Remarks">
+          <el-input type="textarea" v-model="buyForm.BuyRemarks" rows="5"></el-input>
         </el-form-item>
         <div v-if="taskFormView.ServiceType==1">
           <el-form-item label='产品金额' prop="AmazonProductPrice">
@@ -301,7 +316,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-form :model='commentForm' ref='commentForm' :rules="commentRules" label-width='120px' status-icon>
+      <el-form :model='commentForm' ref='commentForm' label-width='120px' status-icon>
         <p class="info-title">评价信息</p>
         <el-form-item label='返款账号' prop="PPaccount">
           <el-input v-model='commentForm.PPaccount'></el-input>
@@ -449,6 +464,11 @@
               <span>{{view.AmazonNumber}}</span>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label='购买备注：' prop="BuyRemarks">
+              <span>{{view.BuyRemarks}}</span>
+            </el-form-item>
+          </el-col>
           <div v-show="view.ServiceType==1">
             <el-col :span="12">
               <el-form-item label='产品金额：' prop="AmazonProductPrice">
@@ -569,6 +589,8 @@
   import FileSaver from 'file-saver'
   import XLSX from 'xlsx'
 
+  import table2excel from 'js-table2excel'
+
   import {
     taskList,
     taskStateNum,
@@ -582,7 +604,8 @@
     userList,
     orderTaskBind,
     taskBindOut,
-    taskAgain
+    taskAgain,
+    countryList
   } from '@/api/api';
   export default {
     name: 'task',
@@ -601,7 +624,8 @@
         menuBtnShow: false, //是否显示列表上方菜单按钮
         searchForm: {
           searchWords: '',
-          state: 0
+          state: 0,
+          country: '0'
         },
         all: 0, //全部
         dfp: 0, //待分配
@@ -622,6 +646,7 @@
           ProductPrice: ''
         },
         buyForm: {
+          PayAccount: '',
           BuyingTime: '',
           AmazonNumber: '',
           AmazonProductPrice: '',
@@ -629,7 +654,8 @@
           Taxation: '',
           Other: '',
           Total: '',
-          Image: ''
+          Image: '',
+          BuyRemarks: ''
         },
         //设置日期控件只可选择今天及以后的时间
         pickerOptions: {
@@ -684,13 +710,6 @@
             trigger: ['blur']
           }],
         },
-        commentRules: {
-          PPaccount: [{
-            required: true,
-            message: '请输入返款账号',
-            trigger: 'blur'
-          }]
-        },
         commentModal: false,
         imageUrl: '',
         commentForm: {
@@ -736,12 +755,14 @@
         userListTitle: '',
         userModal: false,
         tableData2: [],
+        countryData: [], //国家数据
       }
     },
     created() {
       this.getAllData()
       this.getTaskStateNum()
       this.getRateData()
+      this.getCountryData()
     },
     computed: {
       //合计
@@ -752,6 +773,19 @@
       }
     },
     methods: {
+      //获取国家数据
+      getCountryData() {
+        let _this = this
+        let params = {
+          country: '',
+          pageNum: 1,
+          pagesize: 100000000
+        }
+        countryList(params).then(res => {
+          _this.countryData = res.list
+        }).catch((e) => {})
+      },
+
       //获取数据
       getAllData() {
         let _this = this
@@ -784,6 +818,7 @@
           key: show,
           keyWord: _this.searchForm.searchWords,
           State: _this.searchForm.state,
+          countryId: _this.searchForm.country,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize,
           RoolId: roleId
@@ -816,6 +851,7 @@
           Id: userId,
           Key: show,
           keyWord: _this.searchForm.searchWords,
+          countryId: _this.searchForm.country,
           RoolId: roleId
         }
         taskStateNum(params).then(res => {
@@ -948,12 +984,14 @@
               params.Id = userId
             } else {
               params = {
+                PayAccount: _this.buyForm.PayAccount,
                 BuyingTime: _this.buyForm.BuyingTime,
                 AmazonNumber: _this.buyForm.AmazonNumber,
                 Type: ServiceType,
                 TaskId: _this.taskId,
                 Id: userId,
-                Image: _this.buyForm.Image
+                Image: _this.buyForm.Image,
+                BuyRemarks: _this.buyForm.BuyRemarks
               }
             }
             //核算总金额(总额+增值服+服务费)
@@ -1342,36 +1380,173 @@
         }).catch((e) => {})
       },
 
-      // 导出
+      //导出
       exportExcel() {
-        var xlsxParam = {
-          raw: true
-        }
-        // 解决生成重复数据-因为使用table fixed属性
-        var fix = document.querySelector('.el-table__fixed')
-        var wb
-        // 判断要导出的节点中是否有fixed的表格，如果有，转换excel时先将该dom移除，然后append回去
-        if (fix) {
-          wb = XLSX.utils.table_to_book(document.querySelector('#exportTable').removeChild(fix))
-          document.querySelector('#exportTable').appendChild(fix)
-        } else {
-          wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
-        }
-        var wbout = XLSX.write(wb, {
-          bookType: 'xlsx',
-          bookSST: true,
-          type: 'array'
-        })
-        try {
-          FileSaver.saveAs(new Blob([wbout], {
-            type: 'application/octet-stream'
-          }), '任务管理.xlsx')
-        } catch (e) {
-          if (typeof console !== 'undefined') {
-            console.log(e, wbout)
+        const column = [{
+            title: '任务编号',
+            key: 'OrderNumbers',
+            type: 'text'
+          },
+          {
+            title: '产品图',
+            key: 'ExpProductImg',
+            type: 'image',
+            width: 100,
+            height: 100
+          },
+          {
+            title: '任务类型',
+            key: 'ExpServiceType',
+            type: 'text'
+          },
+          {
+            title: '国家',
+            key: 'CountryName',
+            type: 'text'
+          },
+          {
+            title: 'ASIN',
+            key: 'Asin',
+            type: 'text'
+          },
+          {
+            title: '产品名称',
+            key: 'ProductName',
+            type: 'text'
+          },
+          {
+            title: '增值费',
+            key: 'OrderAddedFee',
+            type: 'text'
+          },
+          {
+            title: '服务费',
+            key: 'OrderUnitPriceSerCharge',
+            type: 'text'
+          },
+          {
+            title: '汇率',
+            key: 'OrderExchangeRate',
+            type: 'text'
+          },
+          {
+            title: '总额',
+            key: 'Total',
+            type: 'text'
+          },
+          {
+            title: '改后服务费',
+            key: 'TaskUnitPriceSerCharge',
+            type: 'text'
+          },
+          {
+            title: '改后汇率',
+            key: 'TaskExchangeRate',
+            type: 'text'
+          },
+          {
+            title: '改后总额',
+            key: 'NewTaskTotal',
+            type: 'text'
+          },
+          {
+            title: '差额',
+            key: 'DifferenceTotal',
+            type: 'text'
+          },
+          {
+            title: '客户编码',
+            key: 'CustomerUserId',
+            type: 'text'
+          },
+          {
+            title: '订单备注',
+            key: 'OrderRemarks',
+            type: 'text'
+          },
+          {
+            title: '执行时间',
+            key: 'ExecutionTime',
+            type: 'text'
+          },
+          {
+            title: '操作员',
+            key: 'Name',
+            type: 'text'
+          },
+          {
+            title: '外派员',
+            key: 'Name1',
+            type: 'text'
+          },
+          {
+            title: '购买单号',
+            key: 'AmazonNumber',
+            type: 'text'
+          },
+          {
+            title: '购买时间',
+            key: 'BuyTime',
+            type: 'text'
+          },
+          {
+            title: '任务备注',
+            key: 'Remarks',
+            type: 'text'
+          },
+          {
+            title: '状态',
+            key: 'ExpTaskState',
+            type: 'text'
+          },
+        ]
+
+        // 1.title为列名
+        // 2.key为data数据每个对象对应的key
+        // 3.若为图片格式, 需要加type为image的说明,并且可以设置图片的宽高
+        const data = this.tableData
+        // data数据一些特殊处理
+        for (const t in data) {
+          data[t].ExpProductImg = this.GLOBAL.IMG_URL + data[t].OrderProductPictures
+
+          let TxtServiceType = ''
+          if (data[t].ServiceType == 1) {
+            TxtServiceType = '评后返（代返）'
           }
+          if (data[t].ServiceType == 2) {
+            TxtServiceType = '评后返（自返）'
+          }
+          data[t].ExpServiceType = TxtServiceType
+
+          let TxtTaskState = ''
+          if (data[t].TaskState == 1) {
+            TxtTaskState = '待分配'
+          }
+          if (data[t].TaskState == 2) {
+            TxtTaskState = '待购买'
+          }
+          if (data[t].TaskState == 3) {
+            TxtTaskState = '待确认出单'
+          }
+          if (data[t].TaskState == 4) {
+            TxtTaskState = '待评价'
+          }
+          if (data[t].TaskState == 5) {
+            TxtTaskState = '待确认评价'
+          }
+          if (data[t].TaskState == 6) {
+            TxtTaskState = '已完成'
+          }
+          if (data[t].TaskState == 7) {
+            TxtTaskState = '已取消'
+          }
+          if (data[t].TaskState == 8) {
+            TxtTaskState = '异常'
+          }
+          data[t].ExpTaskState = TxtTaskState
         }
-        return wbout
+        const excelName = '任务管理'
+        table2excel(column, data, excelName)
       }
     }
   }

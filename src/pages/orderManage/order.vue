@@ -13,7 +13,16 @@
                   <el-input v-model="searchForm.searchWords" placeholder="请输入订单编号/产品名称/产品ASIN/客户编码" size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="17">
+              <el-col :xs="24" :span="5">
+                <el-form-item label="是否超时">
+                  <el-select v-model="searchForm.type" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="正常"></el-option>
+                    <el-option value="-1" label="超时"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="12">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -60,6 +69,9 @@
           <el-table-column fixed="left" prop="OrderNumber" label="订单编号" align="center" width="140">
             <template slot-scope="scope">
               <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumber}}</el-link>
+              <p>
+                <span v-if="scope.row.Overtime<0"><span class="danger fz10">超时</span></span>
+              </p>
             </template>
           </el-table-column>
           <el-table-column prop="OrderProductPictures" label="产品图" align="center">
@@ -408,7 +420,8 @@
         checkBoxData: [], //选中数据
         searchForm: {
           searchWords: '',
-          state: 0
+          state: 0,
+          type: '0'
         },
         all: 0, //全部
         dqr: 0, //待确认
@@ -486,6 +499,7 @@
         let params = {
           keyWord: _this.searchForm.searchWords,
           state: _this.searchForm.state,
+          type: _this.searchForm.type,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize
         }
@@ -499,7 +513,8 @@
       getOrderStateNum() {
         let _this = this
         let params = {
-          keyWord: _this.searchForm.searchWords
+          keyWord: _this.searchForm.searchWords,
+          type: _this.searchForm.type
         }
         orderStateNum(params).then(res => {
           _this.all = Number(res.list[0].TotalCount) //全部
