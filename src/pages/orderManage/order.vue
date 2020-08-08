@@ -904,7 +904,7 @@
           },
           {
             title: 'ASIN',
-            key: 'Asin',
+            key: 'ASIN',
             type: 'text'
           },
           {
