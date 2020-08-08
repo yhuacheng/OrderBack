@@ -395,6 +395,8 @@
   import FileSaver from 'file-saver'
   import XLSX from 'xlsx'
 
+  import table2excel from 'js-table2excel'
+
   import {
     orderList,
     orderStateNum,
@@ -876,36 +878,134 @@
         _this.orderProductImgUrl = ''
       },
 
-      // 导出
+      //导出
       exportExcel() {
-        var xlsxParam = {
-          raw: true
-        }
-        // 解决生成重复数据-因为使用table fixed属性
-        var fix = document.querySelector('.el-table__fixed')
-        var wb
-        // 判断要导出的节点中是否有fixed的表格，如果有，转换excel时先将该dom移除，然后append回去
-        if (fix) {
-          wb = XLSX.utils.table_to_book(document.querySelector('#exportTable').removeChild(fix))
-          document.querySelector('#exportTable').appendChild(fix)
-        } else {
-          wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
-        }
-        var wbout = XLSX.write(wb, {
-          bookType: 'xlsx',
-          bookSST: true,
-          type: 'array'
-        })
-        try {
-          FileSaver.saveAs(new Blob([wbout], {
-            type: 'application/octet-stream'
-          }), '订单管理.xlsx')
-        } catch (e) {
-          if (typeof console !== 'undefined') {
-            console.log(e, wbout)
+        const column = [{
+            title: '订单编号',
+            key: 'OrderNumber',
+            type: 'text'
+          },
+          {
+            title: '产品图',
+            key: 'ExpProductImg',
+            type: 'image',
+            width: 100,
+            height: 100
+          },
+          {
+            title: '订单类型',
+            key: 'ExpServiceType',
+            type: 'text'
+          },
+          {
+            title: '国家',
+            key: 'CountryName',
+            type: 'text'
+          },
+          {
+            title: 'ASIN',
+            key: 'Asin',
+            type: 'text'
+          },
+          {
+            title: '产品名称',
+            key: 'ProductName',
+            type: 'text'
+          },
+          {
+            title: '任务数',
+            key: 'Number',
+            type: 'text'
+          },
+          {
+            title: '产品价格',
+            key: 'ProductPrice',
+            type: 'text'
+          },
+          {
+            title: '产品总额',
+            key: 'Totalproductprice',
+            type: 'text'
+          },
+          {
+            title: '增值费',
+            key: 'AddedFee',
+            type: 'text'
+          },
+          {
+            title: '服务费',
+            key: 'UnitPriceSerCharge',
+            type: 'text'
+          },
+          {
+            title: '汇率',
+            key: 'ExchangeRate',
+            type: 'text'
+          },
+          {
+            title: '合计',
+            key: 'Total',
+            type: 'text'
+          },
+          {
+            title: '客户编码',
+            key: 'CustomerUserId',
+            type: 'text'
+          },
+          {
+            title: '下单时间',
+            key: 'OrderTime',
+            type: 'text'
+          },
+          {
+            title: '备注',
+            key: 'Remarks',
+            type: 'text'
+          },
+          {
+            title: '状态',
+            key: 'ExpOrderState',
+            type: 'text'
+          },
+        ]
+
+        // 1.title为列名
+        // 2.key为data数据每个对象对应的key
+        // 3.若为图片格式, 需要加type为image的说明,并且可以设置图片的宽高
+        const data = this.tableData
+        // data数据一些特殊处理
+        for (const t in data) {
+          data[t].ExpProductImg = this.GLOBAL.IMG_URL + data[t].ProductPictures
+
+          let TxtServiceType = ''
+          if (data[t].ServiceType == 1) {
+            TxtServiceType = '评后返（代返）'
           }
+          if (data[t].ServiceType == 2) {
+            TxtServiceType = '评后返（自返）'
+          }
+          data[t].ExpServiceType = TxtServiceType
+
+          let TxtOrderState = ''
+          if (data[t].OrderState == 1) {
+            TxtOrderState = '待确认'
+          }
+          if (data[t].OrderState == 2) {
+            TxtOrderState = '待分配'
+          }
+          if (data[t].OrderState == 3) {
+            TxtOrderState = '已分配'
+          }
+          if (data[t].OrderState == 4) {
+            TxtOrderState = '已完成'
+          }
+          if (data[t].OrderState == 5) {
+            TxtOrderState = '已取消'
+          }
+          data[t].ExpOrderState = TxtOrderState
         }
-        return wbout
+        const excelName = '订单管理'
+        table2excel(column, data, excelName)
       }
     }
   }
