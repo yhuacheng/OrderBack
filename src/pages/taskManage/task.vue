@@ -1011,6 +1011,7 @@
         _this.buyModal = false
         _this.$refs['buyForm'].resetFields()
         _this.buyForm = {
+          PayAccount: '',
           BuyingTime: '',
           AmazonNumber: '',
           AmazonProductPrice: '',
@@ -1018,7 +1019,8 @@
           Taxation: '',
           Other: '',
           Total: '',
-          Image: ''
+          Image: '',
+          BuyRemarks: ''
         }
         _this.imageUrl = ''
 

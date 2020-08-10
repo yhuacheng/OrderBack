@@ -14,6 +14,14 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="5">
+                <el-form-item label="国家">
+                  <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
+                    <el-option value="0" label="全部国家"></el-option>
+                    <el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="5">
                 <el-form-item label="是否超时">
                   <el-select v-model="searchForm.type" placeholder="请选择" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -22,7 +30,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="12">
+              <el-col :xs="24" :span="7">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -89,6 +97,8 @@
           <el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
           <el-table-column prop="ASIN" label="ASIN" align="center"></el-table-column>
           <el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
+          <el-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
+          <el-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'></el-table-column>
           <el-table-column prop="Number" label="任务数" align="center"></el-table-column>
           <el-table-column prop="ProductPrice" label="产品价格" align="center"></el-table-column>
           <el-table-column prop="Totalproductprice" label="产品总额" align="center"></el-table-column>
@@ -405,7 +415,8 @@
     orderTask,
     userList,
     orderTaskBind,
-    orderFeeEdit
+    orderFeeEdit,
+    countryList
   } from '@/api/api';
   export default {
     name: 'order',
@@ -423,6 +434,7 @@
         searchForm: {
           searchWords: '',
           state: 0,
+          country: '0',
           type: '0'
         },
         all: 0, //全部
@@ -487,20 +499,36 @@
               trigger: ['blur']
             }
           ]
-        }
+        },
+        countryData: [], //国家数据
       }
     },
     created() {
       this.getAllData()
       this.getOrderStateNum()
+      this.getCountryData()
     },
     methods: {
+      //获取国家数据
+      getCountryData() {
+        let _this = this
+        let params = {
+          country: '',
+          pageNum: 1,
+          pagesize: 100000000
+        }
+        countryList(params).then(res => {
+          _this.countryData = res.list
+        }).catch((e) => {})
+      },
+
       //获取数据
       getAllData() {
         let _this = this
         let params = {
           keyWord: _this.searchForm.searchWords,
           state: _this.searchForm.state,
+          countryId: _this.searchForm.country,
           type: _this.searchForm.type,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize
@@ -516,6 +544,7 @@
         let _this = this
         let params = {
           keyWord: _this.searchForm.searchWords,
+          countryId: _this.searchForm.country,
           type: _this.searchForm.type
         }
         orderStateNum(params).then(res => {
@@ -626,6 +655,8 @@
       resetSearch() {
         let _this = this
         _this.searchForm.searchWords = ''
+        _this.searchForm.country = '0'
+        _this.searchForm.type = '0'
         _this.currentPage = 1
         _this.getAllData()
         _this.getOrderStateNum()
@@ -910,6 +941,16 @@
           {
             title: '产品名称',
             key: 'ProductName',
+            type: 'text'
+          },
+          {
+            title: '店铺',
+            key: 'ShopName',
+            type: 'text'
+          },
+          {
+            title: '关键词',
+            key: 'ProductKeyWord',
             type: 'text'
           },
           {

@@ -265,7 +265,8 @@
         let _this = this
         let params = {
           keyWord: '',
-          type: 0
+          type: 0,
+          countryId: 0
         }
         orderStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部
