@@ -9,8 +9,8 @@
           <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
             <el-row>
               <el-col :xs="24" :span="6">
-                <el-form-item label="客户名称">
-                  <el-input v-model="searchForm.searchWords" placeholder="请输入客户名称" size="small"></el-input>
+                <el-form-item label="客户搜索">
+                  <el-input v-model="searchForm.searchWords" placeholder="请输入客户编码或手机" size="small"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="18">
