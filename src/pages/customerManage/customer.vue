@@ -300,8 +300,12 @@
       //查询
       searchData() {
         let _this = this
-        _this.currentPage = 1 //页码归1
-        _this.getAllData()
+        _this.$refs.searchForm.validate((valid) => {
+          if (valid) {
+            _this.currentPage = 1 //页码归1
+            _this.getAllData()
+          }
+        })
       },
 
       //获取手机验证码
