@@ -6,10 +6,10 @@
     <div class="mt10">
       <el-collapse-transition>
         <div class="searchBox mb20">
-          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
+          <el-form ref="searchForm" :model="searchForm" :rules='searchRules' class="form-item" label-width="80px">
             <el-row>
               <el-col :xs="24" :span="6">
-                <el-form-item label="客户搜索">
+                <el-form-item label="客户搜索" prop="searchWords">
                   <el-input v-model="searchForm.searchWords" placeholder="请输入客户编码或手机" size="small"></el-input>
                 </el-form-item>
               </el-col>
@@ -231,6 +231,13 @@
         allNow: 0, //现余额
         allIn: 0, //总收入
         allOut: 0, //总支出
+        searchRules: {
+          searchWords: [{
+            pattern: /^[0-9]*$/,
+            message: '只能输入数字',
+            trigger: 'blur'
+          }]
+        },
         Rules: {
           money: [{
               required: true,
@@ -455,6 +462,7 @@
         _this.searchForm = {
           searchWords: ''
         }
+        _this.$refs['searchForm'].resetFields()
         _this.currentPage = 1
         _this.getAllData()
       },

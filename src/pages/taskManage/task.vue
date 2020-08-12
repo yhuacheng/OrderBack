@@ -127,6 +127,7 @@
           <el-table-column prop="Name1" label="外派员" align="center"></el-table-column>
           <el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
           <el-table-column prop="BuyTime" label="购买时间" align="center"></el-table-column>
+          <el-table-column prop="DealTime" label="返款时间" align="center"></el-table-column>
           <el-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></el-table-column>
           <el-table-column prop="TaskState" label="状态" align="center">
             <template slot-scope="scope">
@@ -533,6 +534,11 @@
         <div v-show="view.ServiceType==2">
           <p class="info-title">交易信息</p>
           <el-row>
+            <el-col :span="24">
+              <el-form-item label='返款时间：' prop="DealTime">
+                <span>{{view.DealTime}}</span>
+              </el-form-item>
+            </el-col>
             <el-col :span="24">
               <el-form-item label='交易截图：' prop="DealIamge">
                 <img style="max-width: 80%;" v-show="view.DealIamge" :src="view.DealIamge" />
@@ -1132,7 +1138,8 @@
         _this.$refs['commentForm'].resetFields()
         _this.commentForm = {
           Link: '',
-          Image: ''
+          Image: '',
+          PPaccount: ''
         }
         _this.imageUrl = ''
       },
@@ -1489,6 +1496,11 @@
           {
             title: '购买时间',
             key: 'BuyTime',
+            type: 'text'
+          },
+          {
+            title: '返款时间',
+            key: 'DealTime',
             type: 'text'
           },
           {
