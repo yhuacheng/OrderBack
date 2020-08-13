@@ -70,50 +70,51 @@
         </div>
       </div>
       <div class="mt10">
-        <el-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
-          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table">
-          <el-table-column type="selection" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
-          <el-table-column fixed="left" prop="OrderNumber" label="订单编号" align="center" width="140">
+        <pl-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
+          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual max-height="900"
+          :row-height="80">
+          <pl-table-column type="selection" align="center"></pl-table-column>
+          <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
+          <pl-table-column fixed="left" prop="OrderNumber" label="订单编号" align="center" width="140">
             <template slot-scope="scope">
-              <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumber}}</el-link>
+              <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumber}}</el-link>
               <p>
                 <span v-if="scope.row.Overtime<0"><span class="danger fz10">超时</span></span>
               </p>
             </template>
-          </el-table-column>
-          <el-table-column prop="OrderProductPictures" label="产品图" align="center">
+          </pl-table-column>
+          <pl-table-column prop="OrderProductPictures" label="产品图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-show="scope.row.ProductPictures" :src="GLOBAL.IMG_URL+scope.row.ProductPictures"
-                @click="showImage(scope.$index,scope.row)" />
+                @click.stop="showImage(scope.$index,scope.row)" />
             </template>
-          </el-table-column>
-          <el-table-column prop="ServiceType" label="订单类型" align="center">
+          </pl-table-column>
+          <pl-table-column prop="ServiceType" label="订单类型" align="center" width="130">
             <template slot-scope="scope">
               <span v-if="scope.row.ServiceType==1">评后返（代返）</span>
               <span v-if="scope.row.ServiceType==2">评后返（自返）</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
-          <el-table-column prop="ASIN" label="ASIN" align="center"></el-table-column>
-          <el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="Number" label="任务数" align="center"></el-table-column>
-          <el-table-column prop="ProductPrice" label="产品价格" align="center"></el-table-column>
-          <el-table-column prop="Totalproductprice" label="产品总额" align="center"></el-table-column>
-          <el-table-column prop="AddedFee" label="增值费" align="center"></el-table-column>
-          <el-table-column prop="UnitPriceSerCharge" label="服务费" align="center"></el-table-column>
-          <el-table-column prop="ExchangeRate" label="汇率" align="center"></el-table-column>
-          <el-table-column prop="Total" label="合计" align="center">
+          </pl-table-column>
+          <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
+          <pl-table-column prop="ASIN" label="ASIN" align="center" width="120"></pl-table-column>
+          <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="Number" label="任务数" align="center"></pl-table-column>
+          <pl-table-column prop="ProductPrice" label="产品价格" align="center"></pl-table-column>
+          <pl-table-column prop="Totalproductprice" label="产品总额" align="center"></pl-table-column>
+          <pl-table-column prop="AddedFee" label="增值费" align="center"></pl-table-column>
+          <pl-table-column prop="UnitPriceSerCharge" label="服务费" align="center"></pl-table-column>
+          <pl-table-column prop="ExchangeRate" label="汇率" align="center"></pl-table-column>
+          <pl-table-column prop="Total" label="合计" align="center">
             <template slot-scope="scope">
               <span class="danger">{{scope.row.Total}}</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="CustomerUserId" label="客户编码" align="center"></el-table-column>
-          <el-table-column prop="OrderTime" label="下单时间" align="center"></el-table-column>
-          <el-table-column prop="Remarks" label="备注" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="OrderState" label="状态" align="center">
+          </pl-table-column>
+          <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
+          <pl-table-column prop="OrderTime" label="下单时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="Remarks" label="备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="OrderState" label="状态" align="center">
             <template slot-scope="scope">
               <span v-if="scope.row.OrderState==1">待确认</span>
               <span v-if="scope.row.OrderState==2" class="primary">待分配</span>
@@ -121,16 +122,16 @@
               <span v-if="scope.row.OrderState==4" class="success">已完成</span>
               <span v-if="scope.row.OrderState==5" class="danger">已取消</span>
             </template>
-          </el-table-column>
-          <el-table-column fixed="right" prop="OrderState" label="操作" align="center" width="140">
+          </pl-table-column>
+          <pl-table-column fixed="right" prop="OrderState" label="操作" align="center" width="140">
             <template slot-scope="scope">
-              <el-button size="small" type="primary" v-if="scope.row.OrderState==1" @click="orderConfirm(scope.$index,scope.row,1)">确认</el-button>
-              <el-button size="small" type="danger" v-if="scope.row.OrderState==1" @click="orderConfirm(scope.$index,scope.row,0)">取消</el-button>
-              <el-button size="small" type="warning" v-if="scope.row.OrderState!=1" @click="taskModalShow(scope.$index,scope.row)">分配
+              <el-button size="small" type="primary" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,1)">确认</el-button>
+              <el-button size="small" type="danger" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,0)">取消</el-button>
+              <el-button size="small" type="warning" v-if="scope.row.OrderState!=1" @click.stop="taskModalShow(scope.$index,scope.row)">分配
                 / 查看</el-button>
             </template>
-          </el-table-column>
-        </el-table>
+          </pl-table-column>
+        </pl-table>
         <div class="table-foot">
           <div></div>
           <div>
@@ -620,9 +621,15 @@
           return value == row
         })
         if (findResult != -1) {
-          _this.$refs.table.toggleRowSelection(row, false);
+          _this.$refs.table.toggleRowSelection([{
+            row: row,
+            selected: false
+          }])
         } else {
-          _this.$refs.table.toggleRowSelection(row, true);
+          _this.$refs.table.toggleRowSelection([{
+            row: row,
+            selected: true
+          }])
         }
       },
 

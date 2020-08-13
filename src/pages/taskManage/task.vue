@@ -78,64 +78,65 @@
         </div>
       </div>
       <div class="mt10">
-        <el-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
-          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table">
-          <el-table-column type="selection" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
-          <el-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="156">
+        <pl-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
+          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual max-height="900"
+          :row-height="80">
+          <pl-table-column type="selection" align="center"></pl-table-column>
+          <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
+          <pl-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="156">
             <template slot-scope="scope">
-              <el-link type="primary" :underline="false" @click="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
+              <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
               <p>
                 <span v-if="scope.row.AgainTaskState==1"><span class="danger fz10">追加任务</span></span>
                 <span v-if="scope.row.NoComment==1"><span class="danger fz10">免评单</span></span>
               </p>
             </template>
-          </el-table-column>
-          <el-table-column prop="OrderProductPictures" label="产品图" align="center">
+          </pl-table-column>
+          <pl-table-column prop="OrderProductPictures" label="产品图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-show="scope.row.OrderProductPictures" :src="GLOBAL.IMG_URL+scope.row.OrderProductPictures"
-                @click="showImage(scope.$index,scope.row)" />
+                @click.stop="showImage(scope.$index,scope.row)" />
             </template>
-          </el-table-column>
-          <el-table-column prop="ServiceType" label="任务类型" align="center">
+          </pl-table-column>
+          <pl-table-column prop="ServiceType" label="任务类型" align="center" width="130">
             <template slot-scope="scope">
               <span v-if="scope.row.ServiceType==1">评后返（代返）</span>
               <span v-if="scope.row.ServiceType==2">评后返（自返）</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
-          <el-table-column prop="Asin" label="ASIN" align="center"></el-table-column>
-          <el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="OrderAddedFee" label="增值费" align="center"></el-table-column>
-          <el-table-column prop="OrderUnitPriceSerCharge" label="服务费" align="center"></el-table-column>
-          <el-table-column prop="OrderExchangeRate" label="汇率" align="center"></el-table-column>
-          <el-table-column prop="Total" label="总额" align="center">
+          </pl-table-column>
+          <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
+          <pl-table-column prop="Asin" label="ASIN" align="center" width="120"></pl-table-column>
+          <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="OrderAddedFee" label="增值费" align="center"></pl-table-column>
+          <pl-table-column v-if='In' prop="OrderUnitPriceSerCharge" label="服务费" align="center"></pl-table-column>
+          <pl-table-column v-if='In' prop="OrderExchangeRate" label="汇率" align="center"></pl-table-column>
+          <pl-table-column v-if='In' prop="Total" label="总额" align="center">
             <template slot-scope="scope">
               <span class="danger">{{scope.row.Total}}</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="TaskUnitPriceSerCharge" label="改后服务" align="center"></el-table-column>
-          <el-table-column prop="TaskExchangeRate" label="改后汇率" align="center"></el-table-column>
-          <el-table-column prop="NewTaskTotal" label="改后总额" align="center">
+          </pl-table-column>
+          <pl-table-column v-if='Out' prop="TaskUnitPriceSerCharge" label="改后服务" align="center"></pl-table-column>
+          <pl-table-column v-if='Out' prop="TaskExchangeRate" label="改后汇率" align="center"></pl-table-column>
+          <pl-table-column v-if='Out' prop="NewTaskTotal" label="改后总额" align="center">
             <template slot-scope="scope">
               <span class="danger">{{scope.row.NewTaskTotal}}</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="DifferenceTotal" label="差额" align="center">
+          </pl-table-column>
+          <pl-table-column v-if='InAdmin' prop="DifferenceTotal" label="差额" align="center">
             <template slot-scope="scope">
               <span class="danger">{{scope.row.DifferenceTotal}}</span>
             </template>
-          </el-table-column>
-          <el-table-column prop="CustomerUserId" label="客户编码" align="center"></el-table-column>
-          <el-table-column prop="OrderRemarks" label="订单备注" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="ExecutionTime" label="执行时间" align="center"></el-table-column>
-          <el-table-column prop="Name" label="操作员" align="center"></el-table-column>
-          <el-table-column prop="Name1" label="外派员" align="center"></el-table-column>
-          <el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
-          <el-table-column prop="BuyTime" label="购买时间" align="center"></el-table-column>
-          <el-table-column prop="DealTime" label="返款时间" align="center"></el-table-column>
-          <el-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></el-table-column>
-          <el-table-column prop="TaskState" label="状态" align="center">
+          </pl-table-column>
+          <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
+          <pl-table-column prop="OrderRemarks" label="订单备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
+          <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
+          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="170"></pl-table-column>
+          <pl-table-column prop="BuyTime" label="购买时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="DealTime" label="返款时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="TaskState" label="状态" align="center" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.TaskState==1">待分配</span>
               <span v-if="scope.row.TaskState==2" class="warning">待购买</span>
@@ -146,16 +147,18 @@
               <span v-if="scope.row.TaskState==7" class="danger">已取消</span>
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
-          </el-table-column>
-          <el-table-column fixed="right" prop="TaskState" label="操作" align="center" width="140">
+          </pl-table-column>
+          <pl-table-column fixed="right" prop="TaskState" label="操作" align="center" width="140">
             <template slot-scope="scope">
-              <el-button size="small" type="primary" v-if="scope.row.TaskState==2 || scope.row.TaskState==8" @click="buyModalShow(scope.$index,scope.row)">购买</el-button>
-              <el-button size="small" type="warning" v-if="scope.row.TaskState==4 || scope.row.TaskState==5" @click="commentModalShow(scope.$index,scope.row)">评价</el-button>
+              <el-button size="small" type="primary" v-if="scope.row.TaskState==2 || scope.row.TaskState==8"
+                @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
+              <el-button size="small" type="warning" v-if="scope.row.TaskState==4 || scope.row.TaskState==5"
+                @click.stop="commentModalShow(scope.$index,scope.row)">评价</el-button>
               <el-button size="small" type="danger" v-if="btnShow && scope.row.TaskState!=6 && scope.row.TaskState!=7"
-                @click="changeState(scope.$index,scope.row)">取消</el-button>
+                @click.stop="changeState(scope.$index,scope.row)">取消</el-button>
             </template>
-          </el-table-column>
-        </el-table>
+          </pl-table-column>
+        </pl-table>
         <div class="table-foot">
           <div></div>
           <div>
@@ -769,6 +772,9 @@
         userModal: false,
         tableData2: [],
         countryData: [], //国家数据
+        In: false, //公司内部人员
+        Out: false, //外派人员
+        InAdmin: false //公司内部管理者
       }
     },
     created() {
@@ -867,6 +873,18 @@
           show = 'Thomers_120146'
         } else {
           show = 'No'
+        }
+        //根据角色判断列表显示哪些列(管理员、业务员显示所有；操作员显示服务费、汇率、总额；外派员显示改后服务费、改后汇率、改后总额)
+        if (x >= 0 || y >= 0) {
+          _this.In = true
+          _this.Out = true
+          _this.InAdmin = true
+        }
+        if (z >= 0) {
+          _this.In = true
+        }
+        if (w >= 0) {
+          _this.Out = true
         }
         let userId = sessionStorage.getItem('userId')
         let time = _this.searchForm.time
@@ -1228,9 +1246,15 @@
           return value == row
         })
         if (findResult != -1) {
-          _this.$refs.table.toggleRowSelection(row, false);
+          _this.$refs.table.toggleRowSelection([{
+            row: row,
+            selected: false
+          }])
         } else {
-          _this.$refs.table.toggleRowSelection(row, true);
+          _this.$refs.table.toggleRowSelection([{
+            row: row,
+            selected: true
+          }])
         }
       },
 

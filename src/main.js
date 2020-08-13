@@ -3,20 +3,22 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-// import vuex from 'vuex'
 import axios from 'axios'
 import 'babel-polyfill'
 import ElementUI from 'element-ui'
-// import VueResource from 'vue-resource'
-import global_ from '@/components/global'
 import 'element-ui/lib/theme-chalk/index.css'
-// import 'element-ui/lib/theme-chalk/base.css'
-import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
+import global_ from '@/components/global'
 import '@/assets/css/base.css'
 import 'default-passive-events'
 
+import plTable from 'pl-table'
+import 'pl-table/themes/index.css'
+Vue.use(plTable);
+
 Vue.config.productionTip = false
-Vue.use(ElementUI, CollapseTransition.name, CollapseTransition)
+
+Vue.use(ElementUI)
+
 Vue.prototype.axios = axios
 Vue.prototype.GLOBAL = global_
 
