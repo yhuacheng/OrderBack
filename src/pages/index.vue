@@ -344,7 +344,9 @@
           Key: 'Michale_009',
           keyWord: '',
           RoolId: 1,
-          countryId: 0
+          countryId: 0,
+          startTime: '',
+          endTime: ''
         }
         taskStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部

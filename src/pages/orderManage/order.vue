@@ -1045,7 +1045,7 @@
           }
           data[t].ExpOrderState = TxtOrderState
         }
-        const excelName = '订单管理'
+        const excelName = '订单管理.xls'
         table2excel(column, data, excelName)
       }
     }

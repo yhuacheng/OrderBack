@@ -6,14 +6,14 @@
     <div class="mt10">
       <el-collapse-transition>
         <div class="searchBox mb20">
-          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
+          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
             <el-row>
               <el-col :xs="24" :span="7">
                 <el-form-item label="搜索内容">
                   <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码/购买单号" size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
                     <el-option value="0" label="全部国家"></el-option>
@@ -21,7 +21,13 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="12">
+              <el-col :xs="24" :span="8">
+                <el-form-item label="购买时间">
+                  <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="5">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -631,7 +637,8 @@
         searchForm: {
           searchWords: '',
           state: 0,
-          country: '0'
+          country: '0',
+          time: []
         },
         all: 0, //全部
         dfp: 0, //待分配
@@ -819,12 +826,21 @@
           _this.menuBtnShow = true
         }
         let userId = sessionStorage.getItem('userId')
+        let time = _this.searchForm.time
+        let time1 = ''
+        let time2 = ''
+        if (time != '' && time != null) {
+          time1 = time[0]
+          time2 = time[1]
+        }
         let params = {
           id: userId,
           key: show,
           keyWord: _this.searchForm.searchWords,
           State: _this.searchForm.state,
           countryId: _this.searchForm.country,
+          startTime: time1,
+          endTime: time2,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize,
           RoolId: roleId
@@ -853,11 +869,20 @@
           show = 'No'
         }
         let userId = sessionStorage.getItem('userId')
+        let time = _this.searchForm.time
+        let time1 = ''
+        let time2 = ''
+        if (time != '' && time != null) {
+          time1 = time[0]
+          time2 = time[1]
+        }
         let params = {
           Id: userId,
           Key: show,
           keyWord: _this.searchForm.searchWords,
           countryId: _this.searchForm.country,
+          startTime: time1,
+          endTime: time2,
           RoolId: roleId
         }
         taskStateNum(params).then(res => {
@@ -1251,6 +1276,8 @@
       resetSearch() {
         let _this = this
         _this.searchForm.searchWords = ''
+        _this.searchForm.country = '0'
+        _this.searchForm.time = []
         _this.currentPage = 1
         _this.getAllData()
         _this.getTaskStateNum()
@@ -1559,7 +1586,7 @@
           }
           data[t].ExpTaskState = TxtTaskState
         }
-        const excelName = '任务管理'
+        const excelName = '任务管理.xls'
         table2excel(column, data, excelName)
       }
     }
