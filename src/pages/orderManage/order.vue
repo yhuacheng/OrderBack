@@ -112,7 +112,7 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
-          <pl-table-column prop="OrderTime" label="下单时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="OrderTime" label="下单时间" align="center" width="145"></pl-table-column>
           <pl-table-column prop="Remarks" label="备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="OrderState" label="状态" align="center">
             <template slot-scope="scope">

@@ -129,12 +129,12 @@
           </pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
           <pl-table-column prop="OrderRemarks" label="订单备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
-          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="145"></pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="170"></pl-table-column>
-          <pl-table-column prop="BuyTime" label="购买时间" align="center" width="140"></pl-table-column>
-          <pl-table-column prop="DealTime" label="返款时间" align="center" width="140"></pl-table-column>
+          <pl-table-column prop="BuyTime" label="购买时间" align="center" width="145"></pl-table-column>
+          <pl-table-column prop="DealTime" label="返款时间" align="center" width="145"></pl-table-column>
           <pl-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="TaskState" label="状态" align="center" width="100">
             <template slot-scope="scope">
