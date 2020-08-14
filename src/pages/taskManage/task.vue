@@ -105,7 +105,7 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
-          <pl-table-column prop="Asin" label="ASIN" align="center" width="120"></pl-table-column>
+          <pl-table-column prop="Asin" label="ASIN" align="center" width="125"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="OrderAddedFee" label="增值费" align="center"></pl-table-column>
           <pl-table-column v-if='In' prop="OrderUnitPriceSerCharge" label="服务费" align="center"></pl-table-column>
@@ -148,7 +148,7 @@
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
           </pl-table-column>
-          <pl-table-column fixed="right" prop="TaskState" label="操作" align="center" width="140">
+          <pl-table-column fixed="right" prop="TaskState" label="操作" align="center" width="155">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="scope.row.TaskState==2 || scope.row.TaskState==8"
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>

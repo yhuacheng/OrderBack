@@ -96,7 +96,7 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
-          <pl-table-column prop="ASIN" label="ASIN" align="center" width="120"></pl-table-column>
+          <pl-table-column prop="ASIN" label="ASIN" align="center" width="125"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'></pl-table-column>
@@ -123,7 +123,7 @@
               <span v-if="scope.row.OrderState==5" class="danger">已取消</span>
             </template>
           </pl-table-column>
-          <pl-table-column fixed="right" prop="OrderState" label="操作" align="center" width="140">
+          <pl-table-column fixed="right" prop="OrderState" label="操作" align="center" width="155">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,1)">确认</el-button>
               <el-button size="small" type="danger" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,0)">取消</el-button>
