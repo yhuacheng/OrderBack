@@ -41,11 +41,13 @@
         </div>
       </el-collapse-transition>
       <div class="mb20">
-        <el-button type="primary" size="small" :disabled="disabledEditFee" @click="editModalShow">
+        <el-button v-if="menuBtnShow" type="primary" size="small" :disabled="disabledEditFee" @click="editModalShow">
           <i class="el-icon-edit-outline"></i> 修改【客户】服务费和汇率</el-button>
-        <el-button v-if="searchForm.state==1" type="success" size="small" @click="orderConfirmMore(1)" :disabled="disabledMore">
+        <el-button v-if="menuBtnShow && searchForm.state==1" type="success" size="small" @click="orderConfirmMore(1)"
+          :disabled="disabledMore">
           <i class="el-icon-circle-check"></i> 批量确认</el-button>
-        <el-button v-if="searchForm.state==1" type="danger" size="small" @click="orderConfirmMore(2)" :disabled="disabledMore">
+        <el-button v-if="menuBtnShow && searchForm.state==1" type="danger" size="small" @click="orderConfirmMore(2)"
+          :disabled="disabledMore">
           <i class="el-icon-circle-close"></i> 批量取消</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
         <div class="tagMenu">
@@ -123,7 +125,7 @@
               <span v-if="scope.row.OrderState==5" class="danger">已取消</span>
             </template>
           </pl-table-column>
-          <pl-table-column fixed="right" prop="OrderState" label="操作" align="center" width="155">
+          <pl-table-column v-if="menuBtnShow" fixed="right" prop="OrderState" label="操作" align="center" width="155">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,1)">确认</el-button>
               <el-button size="small" type="danger" v-if="scope.row.OrderState==1" @click.stop="orderConfirm(scope.$index,scope.row,0)">取消</el-button>
@@ -502,6 +504,7 @@
           ]
         },
         countryData: [], //国家数据
+        menuBtnShow: false
       }
     },
     created() {
@@ -526,6 +529,22 @@
       //获取数据
       getAllData() {
         let _this = this
+
+        // 根据角色判断订单列表按钮显示与隐藏
+        let show = ''
+        let roleId = sessionStorage.getItem('roleId').trim()
+        let x = roleId.indexOf(1) //管理员
+        let y = roleId.indexOf(2) //业务员
+        let z = roleId.indexOf(4) //操作员
+        let w = roleId.indexOf(5) //外派员
+        if (x >= 0 || y >= 0) {
+          _this.menuBtnShow = true
+        } else if (z >= 0) {
+          _this.menuBtnShow = false
+        } else {
+          _this.menuBtnShow = false
+        }
+
         let params = {
           keyWord: _this.searchForm.searchWords,
           state: _this.searchForm.state,
