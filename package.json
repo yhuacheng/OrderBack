@@ -17,6 +17,7 @@
     "element-ui": "^2.9.1",
     "file-saver": "^2.0.2",
     "js-table2excel": "^1.0.3",
+    "pl-table": "^2.7.5",
     "qs": "^6.9.3",
     "vue": "^2.5.2",
     "vue-quill-editor": "^3.0.6",
