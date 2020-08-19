@@ -21,13 +21,13 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="8">
+              <el-col :xs="24" :span="7">
                 <el-form-item label="购买时间">
                   <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="6">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>

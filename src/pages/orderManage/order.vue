@@ -8,12 +8,12 @@
         <div class="searchBox mb20">
           <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
             <el-row>
-              <el-col :xs="24" :span="7">
+              <el-col :xs="24" :span="6">
                 <el-form-item label="搜索内容">
                   <el-input v-model="searchForm.searchWords" placeholder="请输入订单编号/产品名称/产品ASIN/客户编码" size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
                     <el-option value="0" label="全部国家"></el-option>
@@ -21,7 +21,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="是否超时">
                   <el-select v-model="searchForm.type" placeholder="请选择" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -31,6 +31,12 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="7">
+                <el-form-item label="下单时间">
+                  <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="3">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -438,7 +444,8 @@
           searchWords: '',
           state: 0,
           country: '0',
-          type: '0'
+          type: '0',
+          time: []
         },
         all: 0, //全部
         dqr: 0, //待确认
@@ -544,12 +551,20 @@
         } else {
           _this.menuBtnShow = false
         }
-
+        let time = _this.searchForm.time
+        let time1 = ''
+        let time2 = ''
+        if (time != '' && time != null) {
+          time1 = time[0]
+          time2 = time[1]
+        }
         let params = {
           keyWord: _this.searchForm.searchWords,
           state: _this.searchForm.state,
           countryId: _this.searchForm.country,
           type: _this.searchForm.type,
+          startTime: time1,
+          endTime: time2,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize
         }
@@ -562,10 +577,19 @@
       //获取不同状态的订单数量
       getOrderStateNum() {
         let _this = this
+        let time = _this.searchForm.time
+        let time1 = ''
+        let time2 = ''
+        if (time != '' && time != null) {
+          time1 = time[0]
+          time2 = time[1]
+        }
         let params = {
           keyWord: _this.searchForm.searchWords,
           countryId: _this.searchForm.country,
-          type: _this.searchForm.type
+          type: _this.searchForm.type,
+          startTime: time1,
+          endTime: time2,
         }
         orderStateNum(params).then(res => {
           _this.all = Number(res.list[0].TotalCount) //全部

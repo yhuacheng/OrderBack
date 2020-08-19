@@ -266,7 +266,9 @@
         let params = {
           keyWord: '',
           type: 0,
-          countryId: 0
+          countryId: 0,
+          startTime: '',
+          endTime: '',
         }
         orderStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部
