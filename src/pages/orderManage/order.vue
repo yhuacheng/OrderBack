@@ -707,6 +707,7 @@
         _this.searchForm.searchWords = ''
         _this.searchForm.country = '0'
         _this.searchForm.type = '0'
+        _this.searchForm.time = []
         _this.currentPage = 1
         _this.getAllData()
         _this.getOrderStateNum()
