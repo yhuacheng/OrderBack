@@ -265,8 +265,9 @@
         let _this = this
         let params = {
           keyWord: '',
-          type: 0,
           countryId: 0,
+          type: 0,
+          Diff: 0,
           startTime: '',
           endTime: '',
         }
@@ -347,6 +348,7 @@
           keyWord: '',
           RoolId: 1,
           countryId: 0,
+          Diff: 0,
           startTime: '',
           endTime: ''
         }

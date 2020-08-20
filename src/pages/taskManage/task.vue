@@ -8,16 +8,25 @@
         <div class="searchBox mb20">
           <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
             <el-row>
-              <el-col :xs="24" :span="7">
+              <el-col :xs="24" :span="6">
                 <el-form-item label="搜索内容">
                   <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码/购买单号" size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="4">
+              <el-col :xs="24" :span="3">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
-                    <el-option value="0" label="全部国家"></el-option>
+                    <el-option value="0" label="全部"></el-option>
                     <el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="3">
+                <el-form-item label="内单外单">
+                  <el-select v-model="searchForm.types" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="内单"></el-option>
+                    <el-option value="2" label="外单"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -27,8 +36,8 @@
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="6">
-                <el-form-item>
+              <el-col :xs="24" :span="5">
+                <el-form-item style="margin-left: -100px">
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
                 </el-form-item>
@@ -641,6 +650,7 @@
           searchWords: '',
           state: 0,
           country: '0',
+          types: '0',
           time: []
         },
         all: 0, //全部
@@ -845,6 +855,7 @@
           keyWord: _this.searchForm.searchWords,
           State: _this.searchForm.state,
           countryId: _this.searchForm.country,
+          Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
           pageNum: _this.currentPage,
@@ -896,6 +907,7 @@
           Key: show,
           keyWord: _this.searchForm.searchWords,
           countryId: _this.searchForm.country,
+          Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
           RoolId: roleId
@@ -1298,6 +1310,7 @@
         let _this = this
         _this.searchForm.searchWords = ''
         _this.searchForm.country = '0'
+        _this.searchForm.types = '0'
         _this.searchForm.time = []
         _this.currentPage = 1
         _this.getAllData()
