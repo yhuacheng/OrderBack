@@ -64,6 +64,9 @@
         <el-button v-if="menuBtnShow && searchForm.state==1" type="danger" size="small" @click="orderConfirmMore(2)"
           :disabled="disabledMore">
           <i class="el-icon-circle-close"></i> 批量取消</el-button>
+        <el-button v-if="menuBtnShow && searchForm.state==2" type="danger" size="small" @click="timeModalShow(1)"
+          :disabled="disabledMore">
+          <i class="el-icon-s-unfold"></i> 批量分配任务</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
         <div class="tagMenu">
           <el-badge :value="all" type="success" class="item">
@@ -163,7 +166,7 @@
     <!-- 分配任务（任务列表） -->
     <el-dialog :title="title" width="90%" :visible.sync="taskModal" :close-on-click-modal="false" :before-close="closeTaskModal">
       <div class="mt-10">
-        <el-button type="primary" size="small" :disabled="disabledMore2" @click="timeModalShow">分配任务</el-button>
+        <el-button type="primary" size="small" :disabled="disabledMore2" @click="timeModalShow(2)">分配任务</el-button>
       </div>
       <div class="mt20">
         <el-table border :data="tableData2" id="exportTable2" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
@@ -433,6 +436,7 @@
     orderTask,
     userList,
     orderTaskBind,
+    orderTaskBindForOrder,
     orderFeeEdit,
     countryList
   } from '@/api/api';
@@ -521,7 +525,8 @@
           ]
         },
         countryData: [], //国家数据
-        menuBtnShow: false
+        menuBtnShow: false,
+        FPtype: '' //任务分配类型  1从整个订单列表分配 2从订单列表中的任务列表分配
       }
     },
     created() {
@@ -831,9 +836,10 @@
       },
 
       //任务执行时间弹窗
-      timeModalShow() {
+      timeModalShow(val) {
         let _this = this
         _this.timeModal = true
+        _this.FPtype = val //任务分配类型
       },
 
       //关闭任务执行时间弹窗
@@ -841,6 +847,7 @@
         let _this = this
         _this.timeModal = false
         _this.taskTime = ''
+        _this.FPtype = ''
       },
 
       //打开分配人员弹窗
@@ -880,26 +887,50 @@
         let _this = this
         _this.$refs.table3.clearSelection()
         _this.$refs.table3.toggleRowSelection(val, true)
-        let taskIds = _this.checkBoxData2.map(item => item.Id) //任务表选中的数据
-        let userId = val.Id //人员表选中的数据
-        let taskNum = _this.checkBoxData2.length //选中的任务数
-        _this.$confirm('确认要将选中的 ' + taskNum + ' 条任务分配给【' + val.Name + '】吗？', '信息提示', {
-          type: 'warning'
-        }).then(() => {
-          let params = {
-            id: taskIds,
-            userId: userId,
-            stateTime: _this.taskTime,
-            orderId: _this.orderId
-          }
-          orderTaskBind(params).then((res) => {
-            _this.userModal = false
-            _this.closeTimeModal()
-            _this.getTaskData()
-            _this.getAllData()
-            _this.getOrderStateNum()
-          })
-        }).catch(() => {})
+
+        //判断是从订单分配任务还是从任务分配任务
+        if (_this.FPtype == '1') {
+          let orderIds = _this.checkBoxData.map(item => item.Id) //订单表选中的数据
+          let userId = val.Id //人员表选中的数据
+          let orderNum = _this.checkBoxData.length //选中的任务数
+          _this.$confirm('确认要将选中的 ' + orderNum + ' 条订单分配给【' + val.Name + '】吗？', '信息提示', {
+            type: 'warning'
+          }).then(() => {
+            let params = {
+              Id: orderIds,
+              BackUserId: userId,
+              ExecutionTime: _this.taskTime
+            }
+            orderTaskBindForOrder(params).then((res) => {
+              _this.userModal = false
+              _this.closeTimeModal()
+              _this.getAllData()
+              _this.getOrderStateNum()
+            })
+          }).catch(() => {})
+        }
+        if (_this.FPtype == '2') {
+          let taskIds = _this.checkBoxData2.map(item => item.Id) //任务表选中的数据
+          let userId = val.Id //人员表选中的数据
+          let taskNum = _this.checkBoxData2.length //选中的任务数
+          _this.$confirm('确认要将选中的 ' + taskNum + ' 条任务分配给【' + val.Name + '】吗？', '信息提示', {
+            type: 'warning'
+          }).then(() => {
+            let params = {
+              id: taskIds,
+              userId: userId,
+              stateTime: _this.taskTime,
+              orderId: _this.orderId
+            }
+            orderTaskBind(params).then((res) => {
+              _this.userModal = false
+              _this.closeTimeModal()
+              _this.getTaskData()
+              _this.getAllData()
+              _this.getOrderStateNum()
+            })
+          }).catch(() => {})
+        }
       },
 
       //打开修改服务费和汇率弹窗

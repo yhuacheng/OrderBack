@@ -58,6 +58,7 @@ export const orderState = (params) => post('/api/Order/ChangeOrderState', params
 export const orderStateMore = (params) => post('/api/Order/BatchOrderChangeState', params) //订单批量确认/取消
 export const orderTask = (params) => get('/api/Order/GetTask', params) //订单拆分的任务列表
 export const orderTaskBind = (params) => post('/api/Order/AssignedTaks', params) //订单任务分配
+export const orderTaskBindForOrder = (params) => post('/api/Order/BatchToBeAssigned', params) //订单任务分配（从订单列表分配）
 export const orderFeeEdit = (params) => post('/api/Order/ChangeOrderInformation', params) //订单服务费汇率修改
 
 export const taskList = (params) => get('/api/Task/GetTaskList', params) //任务列表

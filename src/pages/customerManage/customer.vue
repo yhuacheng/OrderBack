@@ -127,19 +127,20 @@
           <el-table border :data="tableData2" id="exportTable2" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
             ref="table2">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
-            <el-table-column prop="Number" label="流水号" align="center"></el-table-column>
-            <el-table-column prop="State" label="收支类型" align="center">
+            <el-table-column prop="BusinessNumber" label="流水号" align="center"></el-table-column>
+            <el-table-column prop="PaymentState" label="收支类型" align="center">
               <template slot-scope="scope">
-                <span v-if="scope.row.State==1" class="success">余额收入</span>
-                <span v-if="scope.row.State==2" class="danger">余额支出</span>
+                <span v-if="scope.row.PaymentState==1" class="success">余额收入</span>
+                <span v-if="scope.row.PaymentState==2" class="danger">余额支出</span>
               </template>
             </el-table-column>
-            <el-table-column prop="Monery" class="danger" label="金额" align="center">
+            <el-table-column prop="TransactionAmount" class="danger" label="金额" align="center">
               <template slot-scope="scope">
-                <span v-if="scope.row.State==1" class="success">{{scope.row.Monery}}</span>
-                <span v-if="scope.row.State==2" class="danger">{{scope.row.Monery}}</span>
+                <span v-if="scope.row.PaymentState==1" class="success">{{scope.row.TransactionAmount}}</span>
+                <span v-if="scope.row.PaymentState==2" class="danger">{{scope.row.TransactionAmount}}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="TransactionTime" label="交易时间" align="center"></el-table-column>
             <el-table-column prop="Remarks" label="备注" align="center"></el-table-column>
           </el-table>
           <div class="table-foot">
@@ -517,7 +518,7 @@
         customerBalance(params).then(res => {
           _this.tableData2 = res.list
           _this.allNow = res.list[0].AccountBalance
-          _this.allIn = res.list[0].AccumulatedIncome
+          _this.allIn = res.list[0].AccumulatedIncone
           _this.allOut = res.list[0].AccumulatedExpenditure
           _this.total2 = Number(res.total)
           _this.balanceModal = true //获取数据后打开模态框
