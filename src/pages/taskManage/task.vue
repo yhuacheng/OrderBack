@@ -8,9 +8,18 @@
         <div class="searchBox mb20">
           <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
             <el-row>
-              <el-col :xs="24" :span="6">
+              <el-col :xs="24" :span="5">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="请输入任务编号/产品ASIN/操作员/客户编码/购买单号" size="small"></el-input>
+                  <el-input v-model="searchForm.searchWords" placeholder="任务编号/ASIN/操作员/客户编码/购买单号" size="small"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="3">
+                <el-form-item label="订单类型">
+                  <el-select v-model="searchForm.serveType" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="评后返（代返）"></el-option>
+                    <el-option value="2" label="评后返（自返）"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
@@ -36,7 +45,7 @@
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="3">
                 <el-form-item style="margin-left: -100px">
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
@@ -49,13 +58,16 @@
       <div class="mb20">
         <el-button type="primary" size="small" v-if="menuBtnShow" :disabled="disabledEditFee" @click="editModalShow">
           <i class="el-icon-edit-outline"></i> 修改【经销商】服务费和汇率</el-button>
-        <el-button type="danger" size="small" v-if="menuBtnShow" :disabled="disabledOut" @click="userModalShow">
+        <el-button type="danger" size="small" v-if="menuBtnShow" :disabled="disabledOut" @click="userModalShow(1)">
           <i class="el-icon-place"></i> 外派</el-button>
         <el-button type="success" size="small" v-if="menuBtnShow" :disabled="disabled" @click="TaskAgainShow">
           <i class="el-icon-circle-plus-outline"></i> 追加任务</el-button>
         <el-button v-if="btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7" type="danger"
           size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i> 批量取消</el-button>
-        <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
+        <el-button type="danger" size="small" v-if="btnShow" :disabled="disabledEditFee" @click="userModalShow(2)">
+          <i class="el-icon-user-solid"></i> 转派</el-button>
+        <el-button type="warning" size="small" v-if="menuBtnShow" @click="exportExcel"><i class="el-icon-upload2"></i>
+          导出</el-button>
         <div class="tagMenu mt20 mb20" style="float: none">
           <el-badge :value="all" type="success" class="item">
             <el-button size="small" @click='searchStateData(0)' :class="{'active':searchForm.state==0}">全部</el-button>
@@ -92,12 +104,14 @@
           :row-height="80">
           <pl-table-column type="selection" align="center"></pl-table-column>
           <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
-          <pl-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="156">
+          <pl-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="176">
             <template slot-scope="scope">
+              <i class="el-icon-document-copy" @click.stop="copy(scope.$index,scope.row)"></i>
               <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
               <p>
                 <span v-if="scope.row.AgainTaskState==1"><span class="danger fz10">追加任务</span></span>
                 <span v-if="scope.row.NoComment==1"><span class="danger fz10">免评单</span></span>
+                <span v-if="scope.row.Overtime<0"><span class="danger fz10">超时</span></span>
               </p>
             </template>
           </pl-table-column>
@@ -651,7 +665,8 @@
           state: 0,
           country: '0',
           types: '0',
-          time: []
+          time: [],
+          serveType: '0'
         },
         all: 0, //全部
         dfp: 0, //待分配
@@ -784,7 +799,8 @@
         countryData: [], //国家数据
         In: false, //公司内部人员
         Out: false, //外派人员
-        InAdmin: false //公司内部管理者
+        InAdmin: false, //公司内部管理者
+        Ptype: '' //分派类型 1.外派处分派 2.管理员转派
       }
     },
     created() {
@@ -858,6 +874,7 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          ServerType: _this.searchForm.serveType,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize,
           RoolId: roleId
@@ -910,6 +927,7 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          ServerType: _this.searchForm.serveType,
           RoolId: roleId
         }
         taskStateNum(params).then(res => {
@@ -1312,6 +1330,7 @@
         _this.searchForm.country = '0'
         _this.searchForm.types = '0'
         _this.searchForm.time = []
+        _this.searchForm.serveType = '0'
         _this.currentPage = 1
         _this.getAllData()
         _this.getTaskStateNum()
@@ -1367,9 +1386,15 @@
       },
 
       //打开分配人员弹窗
-      userModalShow() {
+      userModalShow(val) {
         let _this = this
-        _this.userListTitle = '外派员列表'
+        _this.Ptype = val
+        if (val == '1') {
+          _this.userListTitle = '外派员列表'
+        }
+        if (val == '2') {
+          _this.userListTitle = '操作员列表'
+        }
         _this.getUserData()
       },
 
@@ -1382,7 +1407,8 @@
           pagesize: 100000000,
         }
         userList(params).then(res => {
-          let arr = []
+          let arr = [] //外派员
+          let arr2 = [] //操作员
           for (let x in res.list) {
             let roleId = res.list[x].RoolId
             if (roleId == null) {
@@ -1393,8 +1419,16 @@
             if (roleId.indexOf(5) >= 0 && state == 1) {
               arr.push(res.list[x])
             }
+            if (roleId.indexOf(4) >= 0 && state == 1) {
+              arr2.push(res.list[x])
+            }
           }
-          _this.tableData2 = arr
+          if (_this.Ptype == '1') {
+            _this.tableData2 = arr
+          }
+          if (_this.Ptype == '2') {
+            _this.tableData2 = arr2
+          }
           _this.userModal = true //获取数据后显示模态框
         }).catch((e) => {})
       },
@@ -1407,12 +1441,20 @@
         let taskIds = _this.checkBoxData.map(item => item.Id) //任务表选中的数据
         let userId = val.Id //人员表选中的数据
         let taskNum = _this.checkBoxData.length //选中的任务数
-        _this.$confirm('确认要将选中的 ' + taskNum + ' 条任务外派给【' + val.Name + '】吗？', '信息提示', {
+        let txt = ''
+        if (_this.Ptype == '1') {
+          txt = '外派'
+        }
+        if (_this.Ptype == '2') {
+          txt = '转派'
+        }
+        _this.$confirm('确认要将选中的 ' + taskNum + ' 条任务 ' + txt + ' 给【' + val.Name + '】吗？', '信息提示', {
           type: 'warning'
         }).then(() => {
           let params = {
             Tid: taskIds,
-            userId: userId
+            userId: userId,
+            Type: _this.Ptype
           }
           taskBindOut(params).then((res) => {
             _this.userModal = false
@@ -1448,6 +1490,20 @@
         taskAgain(params).then(res => {
           _this.getAllData()
         }).catch((e) => {})
+      },
+
+      //复制任务编号
+      copy(index, row) {
+        let oInput = document.createElement('input');
+        oInput.value = row.OrderNumbers;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象;
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        this.$message({
+          message: '任务编号复制成功',
+          type: 'success'
+        });
+        oInput.remove()
       },
 
       //导出

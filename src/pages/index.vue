@@ -270,6 +270,7 @@
           Diff: 0,
           startTime: '',
           endTime: '',
+          ServerType: 0
         }
         orderStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部
@@ -350,7 +351,8 @@
           countryId: 0,
           Diff: 0,
           startTime: '',
-          endTime: ''
+          endTime: '',
+          ServerType: 0
         }
         taskStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部

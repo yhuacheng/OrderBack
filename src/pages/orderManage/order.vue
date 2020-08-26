@@ -6,11 +6,20 @@
     <div class="mt10">
       <el-collapse-transition>
         <div class="searchBox mb20">
-          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
+          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
             <el-row>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="请输入订单编号/产品名称/ASIN/客户编码" size="small"></el-input>
+                  <el-input v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/客户编码" size="small"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="3">
+                <el-form-item label="订单类型">
+                  <el-select v-model="searchForm.serveType" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="评后返（代返）"></el-option>
+                    <el-option value="2" label="评后返（自返）"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
@@ -39,14 +48,14 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="7">
+              <el-col :xs="24" :span="6">
                 <el-form-item label="下单时间">
                   <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="3">
-                <el-form-item style="margin-left: -100px">
+              <el-col :xs="24" :span="2">
+                <el-form-item style="margin-left: -80px;">
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
                 </el-form-item>
@@ -95,8 +104,9 @@
           :row-height="80">
           <pl-table-column type="selection" align="center"></pl-table-column>
           <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
-          <pl-table-column fixed="left" prop="OrderNumber" label="订单编号" align="center" width="140">
+          <pl-table-column fixed="left" prop="OrderNumber" label="订单编号" align="center" width="150">
             <template slot-scope="scope">
+              <i class="el-icon-document-copy" @click.stop="copy(scope.$index,scope.row)"></i>
               <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumber}}</el-link>
               <p>
                 <span v-if="scope.row.Overtime<0"><span class="danger fz10">超时</span></span>
@@ -460,6 +470,7 @@
           type: '0',
           types: '0',
           time: [],
+          serveType: '0'
         },
         all: 0, //全部
         dqr: 0, //待确认
@@ -581,6 +592,7 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          ServerType: _this.searchForm.serveType,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize
         }
@@ -607,6 +619,7 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          ServerType: _this.searchForm.serveType
         }
         orderStateNum(params).then(res => {
           _this.all = Number(res.list[0].TotalCount) //全部
@@ -726,6 +739,7 @@
         _this.searchForm.type = '0'
         _this.searchForm.types = '0'
         _this.searchForm.time = []
+        _this.searchForm.serveType = '0'
         _this.currentPage = 1
         _this.getAllData()
         _this.getOrderStateNum()
@@ -1002,6 +1016,20 @@
         let _this = this
         _this.imageModal = false
         _this.orderProductImgUrl = ''
+      },
+
+      //复制订单编号
+      copy(index, row) {
+        let oInput = document.createElement('input');
+        oInput.value = row.OrderNumber;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象;
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        this.$message({
+          message: '订单编号复制成功',
+          type: 'success'
+        });
+        oInput.remove()
       },
 
       //导出
