@@ -349,6 +349,7 @@
           keyWord: '',
           RoolId: 1,
           countryId: 0,
+          type: 0,
           Diff: 0,
           startTime: '',
           endTime: '',

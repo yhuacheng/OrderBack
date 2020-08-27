@@ -13,6 +13,7 @@ import 'default-passive-events'
 
 import plTable from 'pl-table'
 import 'pl-table/themes/index.css'
+import 'pl-table/themes/plTableStyle.css'
 Vue.use(plTable);
 
 Vue.config.productionTip = false

@@ -6,11 +6,11 @@
     <div class="mt10">
       <el-collapse-transition>
         <div class="searchBox mb20">
-          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
+          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
             <el-row>
-              <el-col :xs="24" :span="5">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="任务编号/ASIN/操作员/客户编码/购买单号" size="small"></el-input>
+                  <el-input v-model="searchForm.searchWords" placeholder="任务号/ASIN/操作员/客户/购买单号" size="small"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
@@ -31,6 +31,15 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
+                <el-form-item label="是否超时">
+                  <el-select v-model="searchForm.type" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="正常"></el-option>
+                    <el-option value="-1" label="超时"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="3">
                 <el-form-item label="内单外单">
                   <el-select v-model="searchForm.types" placeholder="请选择" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -39,14 +48,14 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="7">
+              <el-col :xs="24" :span="6">
                 <el-form-item label="购买时间">
                   <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="3">
-                <el-form-item style="margin-left: -100px">
+              <el-col :xs="24" :span="2">
+                <el-form-item style="margin-left: -80px">
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
                 </el-form-item>
@@ -99,12 +108,59 @@
         </div>
       </div>
       <div class="mt10">
-        <pl-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
-          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual max-height="900"
+        <pl-table border :data="tableData" id="exportTable" style="width: 100%;" :header-cell-style="{background:'#fafafa'}"
+          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual max-height="840"
           :row-height="80">
           <pl-table-column type="selection" align="center"></pl-table-column>
           <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
-          <pl-table-column fixed="left" prop="OrderNumbers" label="任务编号" align="center" width="176">
+          <!-- 展开栏开始 -->
+          <pl-table-column type="expand" label="展开" width="50">
+            <template slot-scope="props">
+              <el-form label-position="right" inline class="demo-table-expand">
+                <el-form-item label="服务费：" v-if='In'>
+                  <span>{{ props.row.OrderUnitPriceSerCharge }}</span>
+                </el-form-item>
+                <el-form-item label="汇率：" v-if='In'>
+                  <span>{{ props.row.OrderExchangeRate }}</span>
+                </el-form-item>
+                <el-form-item label="总额：" v-if='In'>
+                  <span>{{ props.row.Total }}</span>
+                </el-form-item>
+                <el-form-item label="改后服务费：" v-if='Out'>
+                  <span>{{ props.row.TaskUnitPriceSerCharge }}</span>
+                </el-form-item>
+                <el-form-item label="改后汇率：" v-if='Out'>
+                  <span>{{ props.row.TaskExchangeRate }}</span>
+                </el-form-item>
+                <el-form-item label="改后总额：" v-if='Out'>
+                  <span>{{ props.row.NewTaskTotal }}</span>
+                </el-form-item>
+                <el-form-item label="差额：" v-if='InAdmin'>
+                  <span>{{ props.row.DifferenceTotal }}</span>
+                </el-form-item>
+                <el-form-item label="增值费：">
+                  <span>{{ props.row.OrderAddedFee }}</span>
+                </el-form-item>
+                <el-form-item label="购买单号：">
+                  <span>{{ props.row.AmazonNumber }}</span>
+                </el-form-item>
+                <el-form-item label="购买时间：">
+                  <span>{{ props.row.BuyTime }}</span>
+                </el-form-item>
+                <el-form-item label="产品金额：">
+                  <span>{{ props.row.AmazonProductPrice }}</span>
+                </el-form-item>
+                <el-form-item label="返款时间：">
+                  <span>{{ props.row.DealTime }}</span>
+                </el-form-item>
+                <el-form-item label="返款金额：">
+                  <span>{{ props.row.DealMoeny }}</span>
+                </el-form-item>
+              </el-form>
+            </template>
+          </pl-table-column>
+          <!-- 展开栏结束 -->
+          <pl-table-column prop="OrderNumbers" label="任务编号" align="center" width="176">
             <template slot-scope="scope">
               <i class="el-icon-document-copy" @click.stop="copy(scope.$index,scope.row)"></i>
               <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
@@ -117,8 +173,8 @@
           </pl-table-column>
           <pl-table-column prop="OrderProductPictures" label="产品图" align="center">
             <template slot-scope="scope">
-              <img style="width: 40px;height: 40px;" v-show="scope.row.OrderProductPictures" :src="GLOBAL.IMG_URL+scope.row.OrderProductPictures"
-                @click.stop="showImage(scope.$index,scope.row)" />
+              <img style="width: 40px;height: 40px;" v-if="scope.row.OrderProductPictures" :src="GLOBAL.IMG_URL+scope.row.OrderProductPictures"
+                @click.stop="showImage(scope.$index,scope.row,1)" />
             </template>
           </pl-table-column>
           <pl-table-column prop="ServiceType" label="任务类型" align="center" width="130">
@@ -130,35 +186,18 @@
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
           <pl-table-column prop="Asin" label="ASIN" align="center" width="125"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
-          <pl-table-column prop="OrderAddedFee" label="增值费" align="center"></pl-table-column>
-          <pl-table-column v-if='In' prop="OrderUnitPriceSerCharge" label="服务费" align="center"></pl-table-column>
-          <pl-table-column v-if='In' prop="OrderExchangeRate" label="汇率" align="center"></pl-table-column>
-          <pl-table-column v-if='In' prop="Total" label="总额" align="center">
-            <template slot-scope="scope">
-              <span class="danger">{{scope.row.Total}}</span>
-            </template>
-          </pl-table-column>
-          <pl-table-column v-if='Out' prop="TaskUnitPriceSerCharge" label="改后服务" align="center"></pl-table-column>
-          <pl-table-column v-if='Out' prop="TaskExchangeRate" label="改后汇率" align="center"></pl-table-column>
-          <pl-table-column v-if='Out' prop="NewTaskTotal" label="改后总额" align="center">
-            <template slot-scope="scope">
-              <span class="danger">{{scope.row.NewTaskTotal}}</span>
-            </template>
-          </pl-table-column>
-          <pl-table-column v-if='InAdmin' prop="DifferenceTotal" label="差额" align="center">
-            <template slot-scope="scope">
-              <span class="danger">{{scope.row.DifferenceTotal}}</span>
-            </template>
-          </pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
           <pl-table-column prop="OrderRemarks" label="订单备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="145"></pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
-          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="170"></pl-table-column>
-          <pl-table-column prop="BuyTime" label="购买时间" align="center" width="145"></pl-table-column>
-          <pl-table-column prop="DealTime" label="返款时间" align="center" width="145"></pl-table-column>
           <pl-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="DealIamge" label="交易截图" align="center">
+            <template slot-scope="scope">
+              <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
+                @click.stop="showImage(scope.$index,scope.row,2)" />
+            </template>
+          </pl-table-column>
           <pl-table-column prop="TaskState" label="状态" align="center" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.TaskState==1">待分配</span>
@@ -171,7 +210,7 @@
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
           </pl-table-column>
-          <pl-table-column fixed="right" prop="TaskState" label="操作" align="center" width="155">
+          <pl-table-column prop="TaskState" label="操作" align="center" width="155">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="scope.row.TaskState==2 || scope.row.TaskState==8"
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
@@ -253,12 +292,12 @@
         <el-form-item label='购买备注' prop="Remarks">
           <el-input type="textarea" v-model="buyForm.BuyRemarks" rows="5"></el-input>
         </el-form-item>
+        <el-form-item label='产品金额' prop="AmazonProductPrice">
+          <el-input v-model='buyForm.AmazonProductPrice'>
+            <template slot="prepend">{{symbol}}</template>
+          </el-input>
+        </el-form-item>
         <div v-if="taskFormView.ServiceType==1">
-          <el-form-item label='产品金额' prop="AmazonProductPrice">
-            <el-input v-model='buyForm.AmazonProductPrice'>
-              <template slot="prepend">{{symbol}}</template>
-            </el-input>
-          </el-form-item>
           <el-form-item label='运费' prop="Freight">
             <el-input v-model='buyForm.Freight'>
               <template slot="prepend">{{symbol}}</template>
@@ -664,6 +703,7 @@
           searchWords: '',
           state: 0,
           country: '0',
+          type: '0',
           types: '0',
           time: [],
           serveType: '0'
@@ -871,6 +911,7 @@
           keyWord: _this.searchForm.searchWords,
           State: _this.searchForm.state,
           countryId: _this.searchForm.country,
+          type: _this.searchForm.type,
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
@@ -924,6 +965,7 @@
           Key: show,
           keyWord: _this.searchForm.searchWords,
           countryId: _this.searchForm.country,
+          type: _this.searchForm.type,
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
@@ -1063,6 +1105,7 @@
                 PayAccount: _this.buyForm.PayAccount,
                 BuyingTime: _this.buyForm.BuyingTime,
                 AmazonNumber: _this.buyForm.AmazonNumber,
+                AmazonProductPrice: _this.buyForm.AmazonProductPrice,
                 Type: ServiceType,
                 TaskId: _this.taskId,
                 Id: userId,
@@ -1245,11 +1288,19 @@
       },
 
       //查看产品图大图（列表点击图片查看）
-      showImage(index, row) {
+      showImage(index, row, val) {
         let _this = this
         _this.imageModal = true
-        _this.title2 = '任务【' + row.OrderNumbers + '】产品图'
-        _this.taskProductImgUrl = this.GLOBAL.IMG_URL + row.OrderProductPictures
+        if (val == '1') {
+          _this.title2 = '任务【' + row.OrderNumbers + '】产品图'
+          _this.taskProductImgUrl = this.GLOBAL.IMG_URL + row.OrderProductPictures
+        }
+        if (val == '2') {
+          _this.title2 = '任务【' + row.OrderNumbers + '】交易截图'
+          if (row.DealIamge) {
+            _this.taskProductImgUrl = this.GLOBAL.IMG_URL + row.DealIamge
+          }
+        }
       },
 
       //查看产品图大图（详情页点击图片查看）
@@ -1328,6 +1379,7 @@
         let _this = this
         _this.searchForm.searchWords = ''
         _this.searchForm.country = '0'
+        _this.searchForm.type = '0'
         _this.searchForm.types = '0'
         _this.searchForm.time = []
         _this.searchForm.serveType = '0'
@@ -1626,6 +1678,23 @@
             type: 'text'
           },
           {
+            title: '产品金额',
+            key: 'AmazonProductPrice',
+            type: 'text'
+          },
+          {
+            title: '返款金额',
+            key: 'DealMoeny',
+            type: 'text'
+          },
+          {
+            title: '交易截图',
+            key: 'DealIamge',
+            type: 'image',
+            width: 100,
+            height: 100
+          },
+          {
             title: '状态',
             key: 'ExpTaskState',
             type: 'text'
@@ -1710,5 +1779,37 @@
     width: 178px;
     height: 178px;
     display: block;
+  }
+
+  /* 展开table样式 */
+  .el-table__expanded-cell,
+  .el-table__expanded-cell:hover {
+    background: #F0F9EB !important;
+  }
+
+  .demo-table-expand {
+    font-size: 0;
+  }
+
+  .demo-table-expand label {
+    width: 100px;
+    color: #99a9bf;
+  }
+
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 15%;
+  }
+
+  /* 扩大展开箭头的点击范围 */
+  .el-table__expand-icon {
+    width: 55px;
+    height: 55px;
+    left: -15px;
+  }
+
+  .plTableBox .el-table__expand-icon>.el-icon {
+    top: 42%;
   }
 </style>
