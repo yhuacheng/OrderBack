@@ -566,10 +566,13 @@
         // 根据角色判断订单列表按钮显示与隐藏
         let show = ''
         let roleId = sessionStorage.getItem('roleId').trim()
-        let x = roleId.indexOf(1) //管理员
-        let y = roleId.indexOf(2) //业务员
+        console.log(roleId)
+        let x = roleId.indexOf(1) //总管理员
+        let y = roleId.indexOf(2) //子管理员
+        let c = roleId.indexOf(3) //财务
         let z = roleId.indexOf(4) //操作员
         let w = roleId.indexOf(5) //外派员
+        let s = roleId.indexOf(6) //业务员
         if (x >= 0 || y >= 0) {
           _this.menuBtnShow = true
         } else if (z >= 0) {

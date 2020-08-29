@@ -78,7 +78,7 @@
           _this.menu.user = true
           _this.menu.system = true
         }
-        //业务员
+        //子管理员
         if (roleId.indexOf(2) >= 0) {
           _this.menu.index = true
           _this.menu.order = true
@@ -100,6 +100,13 @@
         //外派员
         if (roleId.indexOf(5) >= 0) {
           _this.menu.task = true
+        }
+        //业务员
+        if (roleId.indexOf(6) >= 0) {
+          _this.menu.index = true
+          _this.menu.order = true
+          _this.menu.task = true
+          _this.menu.customer = true
         }
       }
     }

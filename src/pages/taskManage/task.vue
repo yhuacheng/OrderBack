@@ -49,7 +49,7 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="6">
-                <el-form-item label="购买时间">
+                <el-form-item label="填单时间">
                   <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
                     range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                 </el-form-item>
@@ -109,7 +109,7 @@
       </div>
       <div class="mt10">
         <pl-table border :data="tableData" id="exportTable" style="width: 100%;" :header-cell-style="{background:'#fafafa'}"
-          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual max-height="840"
+          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual height="850"
           :row-height="80">
           <pl-table-column type="selection" align="center"></pl-table-column>
           <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
@@ -135,19 +135,16 @@
                 <el-form-item label="改后总额：" v-if='Out'>
                   <span>{{ props.row.NewTaskTotal }}</span>
                 </el-form-item>
-                <el-form-item label="差额：" v-if='InAdmin'>
+                <el-form-item label="差额：" v-if='In'>
                   <span>{{ props.row.DifferenceTotal }}</span>
                 </el-form-item>
                 <el-form-item label="增值费：">
                   <span>{{ props.row.OrderAddedFee }}</span>
                 </el-form-item>
-                <el-form-item label="购买单号：">
-                  <span>{{ props.row.AmazonNumber }}</span>
-                </el-form-item>
                 <el-form-item label="购买时间：">
                   <span>{{ props.row.BuyTime }}</span>
                 </el-form-item>
-                <el-form-item label="产品金额：">
+                <el-form-item label="购买价格：">
                   <span>{{ props.row.AmazonProductPrice }}</span>
                 </el-form-item>
                 <el-form-item label="返款时间：">
@@ -156,11 +153,17 @@
                 <el-form-item label="返款金额：">
                   <span>{{ props.row.DealMoeny }}</span>
                 </el-form-item>
+                <el-form-item label="订单备注：" style="width: 100%;">
+                  <span>{{ props.row.OrderRemarks }}</span>
+                </el-form-item>
+                <el-form-item label="任务备注：" style="width: 100%;">
+                  <span>{{ props.row.Remarks }}</span>
+                </el-form-item>
               </el-form>
             </template>
           </pl-table-column>
           <!-- 展开栏结束 -->
-          <pl-table-column prop="OrderNumbers" label="任务编号" align="center" width="176">
+          <pl-table-column prop="OrderNumbers" label="任务编号" align="center" width="172">
             <template slot-scope="scope">
               <i class="el-icon-document-copy" @click.stop="copy(scope.$index,scope.row)"></i>
               <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
@@ -177,21 +180,21 @@
                 @click.stop="showImage(scope.$index,scope.row,1)" />
             </template>
           </pl-table-column>
-          <pl-table-column prop="ServiceType" label="任务类型" align="center" width="130">
+          <pl-table-column prop="ServiceType" label="任务类型" align="center" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row.ServiceType==1">评后返（代返）</span>
               <span v-if="scope.row.ServiceType==2">评后返（自返）</span>
             </template>
           </pl-table-column>
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
-          <pl-table-column prop="Asin" label="ASIN" align="center" width="125"></pl-table-column>
+          <pl-table-column prop="Asin" label="ASIN" align="center" width="120"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
-          <pl-table-column prop="OrderRemarks" label="订单备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
-          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="145"></pl-table-column>
+          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
-          <pl-table-column prop="Remarks" label="任务备注" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="165"></pl-table-column>
+          <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
@@ -210,11 +213,11 @@
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
           </pl-table-column>
-          <pl-table-column prop="TaskState" label="操作" align="center" width="155">
+          <pl-table-column v-if="tableBtnShow" prop="TaskState" label="操作" align="center" width="155">
             <template slot-scope="scope">
-              <el-button size="small" type="primary" v-if="scope.row.TaskState==2 || scope.row.TaskState==8"
+              <el-button size="small" type="primary" v-if="btnShow2 && (scope.row.TaskState==2 || scope.row.TaskState==8)"
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
-              <el-button size="small" type="warning" v-if="scope.row.TaskState==4 || scope.row.TaskState==5"
+              <el-button size="small" type="warning" v-if="btnShow2 && (scope.row.TaskState==4 || scope.row.TaskState==5)"
                 @click.stop="commentModalShow(scope.$index,scope.row)">评价</el-button>
               <el-button size="small" type="danger" v-if="btnShow && scope.row.TaskState!=6 && scope.row.TaskState!=7"
                 @click.stop="changeState(scope.$index,scope.row)">取消</el-button>
@@ -292,7 +295,7 @@
         <el-form-item label='购买备注' prop="Remarks">
           <el-input type="textarea" v-model="buyForm.BuyRemarks" rows="5"></el-input>
         </el-form-item>
-        <el-form-item label='产品金额' prop="AmazonProductPrice">
+        <el-form-item label='购买价格' prop="AmazonProductPrice">
           <el-input v-model='buyForm.AmazonProductPrice'>
             <template slot="prepend">{{symbol}}</template>
           </el-input>
@@ -527,13 +530,13 @@
         <p class="info-title">购买信息</p>
         <el-row>
           <el-col :span="12">
-            <el-form-item label='购买时间：' prop="BuyTime">
-              <span>{{view.BuyTime}}</span>
+            <el-form-item label='购买单号：' prop="AmazonNumber">
+              <span>{{view.AmazonNumber}}</span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label='购买单号：' prop="AmazonNumber">
-              <span>{{view.AmazonNumber}}</span>
+            <el-form-item label='购买时间：' prop="BuyTime">
+              <span>{{view.BuyTime}}</span>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -541,12 +544,12 @@
               <span>{{view.BuyRemarks}}</span>
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item label='购买价格：' prop="AmazonProductPrice">
+              <span v-show="view.AmazonProductPrice">{{symbol}}</span><span>{{view.AmazonProductPrice}}</span>
+            </el-form-item>
+          </el-col>
           <div v-show="view.ServiceType==1">
-            <el-col :span="12">
-              <el-form-item label='产品金额：' prop="AmazonProductPrice">
-                <span v-show="view.AmazonProductPrice">{{symbol}}</span><span>{{view.AmazonProductPrice}}</span>
-              </el-form-item>
-            </el-col>
             <el-col :span="12">
               <el-form-item label='运费：' prop="Freight">
                 <span v-show="view.Freight">{{symbol}}</span><span>{{view.Freight}}</span>
@@ -699,6 +702,7 @@
         tableData: [],
         checkBoxData: [], //选中数据
         menuBtnShow: false, //是否显示列表上方菜单按钮
+        tableBtnShow: false, //是否显示列表中的操作按钮
         searchForm: {
           searchWords: '',
           state: 0,
@@ -753,6 +757,7 @@
         handFee: '', //官方手续费率
         handMoney: '', //官方固定费率
         btnShow: false, //判断是否显示取消按钮
+        btnShow2: false, //判断是否显示购买与评价按钮
         Rules: {
           BuyingTime: [{
             required: true,
@@ -839,7 +844,6 @@
         countryData: [], //国家数据
         In: false, //公司内部人员
         Out: false, //外派人员
-        InAdmin: false, //公司内部管理者
         Ptype: '' //分派类型 1.外派处分派 2.管理员转派
       }
     },
@@ -878,10 +882,12 @@
         // 根据角色判断任务列表能看到哪些数据
         let show = ''
         let roleId = sessionStorage.getItem('roleId').trim()
-        let x = roleId.indexOf(1) //管理员
-        let y = roleId.indexOf(2) //业务员
+        let x = roleId.indexOf(1) //总管理员
+        let y = roleId.indexOf(2) //子管理员
+        let c = roleId.indexOf(3) //财务
         let z = roleId.indexOf(4) //操作员
         let w = roleId.indexOf(5) //外派员
+        let s = roleId.indexOf(6) //业务员
         if (x >= 0 || y >= 0) {
           show = 'Michale_009'
         } else if (z >= 0 || w >= 0) {
@@ -893,9 +899,29 @@
         if (x >= 0) {
           _this.btnShow = true
         }
-        //判断如不是外派员则显示列表上方操作按钮
-        if (w < 0) {
+        //判断如果是操作员或外派员则显示列表中的购买与评价按钮
+        if (z >= 0 || w >= 0) {
+          _this.btnShow2 = true
+        }
+        //判断如不是外派员并且不是业务员则显示列表上方操作按钮
+        if (x >= 0 || y >= 0 || z >= 0) {
           _this.menuBtnShow = true
+        }
+        //判断如果不是业务员并且不是子管理员（子管理员无法购买评价取消等）则显示列表中的操作按钮
+        if (x >= 0 || z >= 0 || w >= 0) {
+          _this.tableBtnShow = true
+        } else if (s >= 0) {
+          _this.tableBtnShow = false
+        } else {
+          _this.tableBtnShow = false
+        }
+        //根据角色判断列表显示哪些列(管理员、子管理员、操作员、业务员显示所有；外派员显示改后服务费、改后汇率、改后总额)
+        if (x >= 0 || y >= 0 || z >= 0 || s >= 0) {
+          _this.In = true
+          _this.Out = true
+        }
+        if (w >= 0) {
+          _this.Out = true
         }
         let userId = sessionStorage.getItem('userId')
         let time = _this.searchForm.time
@@ -932,25 +958,18 @@
         // 根据角色判断任务列表能看到哪些数据
         let show = ''
         let roleId = sessionStorage.getItem('roleId').trim()
-        let x = roleId.indexOf(1) //管理员
-        let y = roleId.indexOf(2) //业务员
+        let x = roleId.indexOf(1) //总管理员
+        let y = roleId.indexOf(2) //子管理员
+        let c = roleId.indexOf(3) //财务
         let z = roleId.indexOf(4) //操作员
         let w = roleId.indexOf(5) //外派员
+        let s = roleId.indexOf(6) //业务员
         if (x >= 0 || y >= 0) {
           show = 'Michale_009'
         } else if (z >= 0 || w >= 0) {
           show = 'Thomers_120146'
         } else {
           show = 'No'
-        }
-        //根据角色判断列表显示哪些列(管理员、业务员、操作员显示所有；外派员显示改后服务费、改后汇率、改后总额)
-        if (x >= 0 || y >= 0 || z >= 0) {
-          _this.In = true
-          _this.Out = true
-          _this.InAdmin = true
-        }
-        if (w >= 0) {
-          _this.Out = true
         }
         let userId = sessionStorage.getItem('userId')
         let time = _this.searchForm.time
@@ -1689,7 +1708,7 @@
           },
           {
             title: '交易截图',
-            key: 'DealIamge',
+            key: 'ExpDealIamge',
             type: 'image',
             width: 100,
             height: 100
@@ -1708,6 +1727,12 @@
         // data数据一些特殊处理
         for (const t in data) {
           data[t].ExpProductImg = this.GLOBAL.IMG_URL + data[t].OrderProductPictures
+
+          if (data[t].DealIamge) {
+            data[t].ExpDealIamge = this.GLOBAL.IMG_URL + data[t].DealIamge
+          } else {
+            data[t].ExpDealIamge = ''
+          }
 
           let TxtServiceType = ''
           if (data[t].ServiceType == 1) {
@@ -1782,9 +1807,9 @@
   }
 
   /* 展开table样式 */
-  .el-table__expanded-cell,
-  .el-table__expanded-cell:hover {
-    background: #F0F9EB !important;
+  #exportTable .el-table__expanded-cell,
+  #exportTable .el-table__expanded-cell:hover {
+    background-color: #F0F9EB !important;
   }
 
   .demo-table-expand {
@@ -1804,12 +1829,12 @@
 
   /* 扩大展开箭头的点击范围 */
   .el-table__expand-icon {
-    width: 55px;
-    height: 55px;
-    left: -15px;
+    width: 55px !important;
+    height: 55px !important;
+    left: -15px !important;
   }
 
   .plTableBox .el-table__expand-icon>.el-icon {
-    top: 42%;
+    top: 42% !important;
   }
 </style>
