@@ -276,7 +276,7 @@
       <el-form :model='buyForm' ref='buyForm' :rules='Rules' label-width='120px' status-icon>
         <p class="info-title">购买信息</p>
         <el-form-item label='返款账号' prop="PayAccount">
-          <el-input v-model='buyForm.PayAccount'></el-input>
+          <el-input @keyup.native="toTrim(1)" v-model='buyForm.PayAccount'></el-input>
         </el-form-item>
         <el-form-item label='购买时间' prop="BuyingTime">
           <el-date-picker v-model="buyForm.BuyingTime" type="datetime" style="width: 100%"></el-date-picker>
@@ -394,7 +394,7 @@
       <el-form :model='commentForm' ref='commentForm' label-width='120px' status-icon>
         <p class="info-title">评价信息</p>
         <el-form-item label='返款账号' prop="PPaccount">
-          <el-input v-model='commentForm.PPaccount'></el-input>
+          <el-input @keyup.native="toTrim(2)" v-model='commentForm.PPaccount'></el-input>
         </el-form-item>
         <el-form-item label='评价链接' prop="Link">
           <el-input v-model='commentForm.Link'></el-input>
@@ -1575,6 +1575,17 @@
           type: 'success'
         });
         oInput.remove()
+      },
+
+      //返款账号去空格（购买时和确认评价时）
+      toTrim(val) {
+        let _this = this
+        if (val == '1') {
+          _this.buyForm.PayAccount = _this.buyForm.PayAccount.trim()
+        }
+        if (val == '2') {
+          _this.commentForm.PPaccount = _this.commentForm.PPaccount.trim()
+        }
       },
 
       //导出
