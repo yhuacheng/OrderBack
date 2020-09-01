@@ -10,7 +10,8 @@
             <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/客户编码" size="small"></el-input>
+                  <el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/客户编码"
+                    size="small"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
@@ -566,7 +567,6 @@
         // 根据角色判断订单列表按钮显示与隐藏
         let show = ''
         let roleId = sessionStorage.getItem('roleId').trim()
-        console.log(roleId)
         let x = roleId.indexOf(1) //总管理员
         let y = roleId.indexOf(2) //子管理员
         let c = roleId.indexOf(3) //财务
@@ -1033,6 +1033,12 @@
           type: 'success'
         });
         oInput.remove()
+      },
+
+      //查询条件去空格
+      searchToTrim() {
+        let _this = this
+        _this.searchForm.searchWords = _this.searchForm.searchWords.trim()
       },
 
       //导出

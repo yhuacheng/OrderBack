@@ -50,7 +50,7 @@
           <el-table-column prop="BackName" label="所属用户" align="center"></el-table-column>
           <el-table-column prop="AccountBalance" label="余额" align="center" width="130">
             <template slot-scope="scope">
-              <el-tag style="width: 100px;" type="danger" @click='balanceModalShow(scope.$index,scope.row)'>{{Number(scope.row.AccountBalance)}}</el-tag>
+              <el-tag style="width: 100px;" type="danger" @click.stop='balanceModalShow(scope.$index,scope.row)'>{{Number(scope.row.AccountBalance)}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="LoginIp" label="最后登录IP" align="center"></el-table-column>
@@ -271,14 +271,14 @@
         // 根据角色判断客户列表上显示哪些按钮
         let roleId = sessionStorage.getItem('roleId')
         let x = roleId.indexOf(1) //管理员
-        let y = roleId.indexOf(2) //业务员
+        let y = roleId.indexOf(2) //子管理员
         let z = roleId.indexOf(3) //财务
         //判断如果有管理员权限则显示有效无效和重新分配所属用户按钮
         if (x >= 0) {
           _this.btnShow1 = true
           _this.btnShow3 = true
         }
-        //判断如果有业务员权限则显示有效无效按钮
+        //判断如果有子管理员权限则显示有效无效按钮
         if (y >= 0) {
           _this.btnShow1 = true
         }
@@ -503,6 +503,7 @@
         _this.title = '客户【' + row.Id + '】余额信息'
         _this.customerId = row.Id
         _this.getBalanceData()
+        _this.balanceModal = true //打开模态框
       },
 
       // 获取余额信息列表数据
@@ -521,7 +522,6 @@
           _this.allIn = res.list[0].AccumulatedIncone
           _this.allOut = res.list[0].AccumulatedExpenditure
           _this.total2 = Number(res.total)
-          _this.balanceModal = true //获取数据后打开模态框
         }).catch((e) => {})
       },
 

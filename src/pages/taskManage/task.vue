@@ -10,7 +10,8 @@
             <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="搜索内容">
-                  <el-input v-model="searchForm.searchWords" placeholder="任务号/ASIN/操作员/客户/购买单号" size="small"></el-input>
+                  <el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="任务号/ASIN/操作员/客户/购买单号"
+                    size="small"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :span="3">
@@ -187,13 +188,13 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
-          <pl-table-column prop="Asin" label="ASIN" align="center" width="120"></pl-table-column>
+          <pl-table-column prop="Asin" label="ASIN" align="center" width="118"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
           <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
-          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="165"></pl-table-column>
+          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="162"></pl-table-column>
           <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
@@ -1575,6 +1576,12 @@
           type: 'success'
         });
         oInput.remove()
+      },
+
+      //查询条件去空格
+      searchToTrim() {
+        let _this = this
+        _this.searchForm.searchWords = _this.searchForm.searchWords.trim()
       },
 
       //返款账号去空格（购买时和确认评价时）
