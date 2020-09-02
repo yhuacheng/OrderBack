@@ -6,15 +6,24 @@
     <div class="mt10">
       <el-collapse-transition>
         <div class="searchBox mb20">
-          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="80px">
+          <el-form ref="searchForm" :model="searchForm" class="form-item" label-width="100px">
             <el-row>
-              <el-col :xs="24" :span="4">
+              <el-col :xs="24" :span="8">
                 <el-form-item label="搜索内容">
-                  <el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="任务号/ASIN/操作员/客户/购买单号"
+                  <el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="请输入任务编号/ASIN/操作员/客户编号/购买单号"
                     size="small"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="3">
+              <el-col :xs="24" :span="8">
+                <el-form-item label="填单时间">
+                  <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
+                    style="width: 100%;"></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :xs="24" :span="4">
                 <el-form-item label="订单类型">
                   <el-select v-model="searchForm.serveType" placeholder="请选择" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -23,7 +32,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="3">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -31,16 +40,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="3">
-                <el-form-item label="是否超时">
-                  <el-select v-model="searchForm.type" placeholder="请选择" size="small">
-                    <el-option value="0" label="全部"></el-option>
-                    <el-option value="1" label="正常"></el-option>
-                    <el-option value="-1" label="超时"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :xs="24" :span="3">
+              <el-col :xs="24" :span="4">
                 <el-form-item label="内单外单">
                   <el-select v-model="searchForm.types" placeholder="请选择" size="small">
                     <el-option value="0" label="全部"></el-option>
@@ -49,14 +49,26 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="6">
-                <el-form-item label="填单时间">
-                  <el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
-                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+              <el-col :xs="24" :span="4">
+                <el-form-item label="是否超时">
+                  <el-select v-model="searchForm.type" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="正常"></el-option>
+                    <el-option value="-1" label="超时"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="2">
-                <el-form-item style="margin-left: -80px">
+              <el-col :xs="24" :span="4">
+                <el-form-item label="是否重复">
+                  <el-select v-model="searchForm.repeat" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="-1" label="正常"></el-option>
+                    <el-option value="1" label="重复"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :span="4">
+                <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
                   <el-button size="small" @click="resetSearch">重置</el-button>
                 </el-form-item>
@@ -110,7 +122,7 @@
       </div>
       <div class="mt10">
         <pl-table border :data="tableData" id="exportTable" style="width: 100%;" :header-cell-style="{background:'#fafafa'}"
-          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual height="850"
+          @selection-change="handleSelectionChange" @row-click="rowClick" ref="table" use-virtual height="840"
           :row-height="80">
           <pl-table-column type="selection" align="center"></pl-table-column>
           <pl-table-column type="index" label="序号" align="center" width="50"></pl-table-column>
@@ -169,9 +181,10 @@
               <i class="el-icon-document-copy" @click.stop="copy(scope.$index,scope.row)"></i>
               <el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
               <p>
-                <span v-if="scope.row.AgainTaskState==1"><span class="danger fz10">追加任务</span></span>
-                <span v-if="scope.row.NoComment==1"><span class="danger fz10">免评单</span></span>
+                <span v-if="scope.row.AgainTaskState==1"><span class="danger fz10">追加</span></span>
+                <span v-if="scope.row.NoComment==1"><span class="danger fz10">免评</span></span>
                 <span v-if="scope.row.Overtime<0"><span class="danger fz10">超时</span></span>
+                <span v-if="scope.row.Repeat==1"><span class="danger fz10">重复</span></span>
               </p>
             </template>
           </pl-table-column>
@@ -194,7 +207,7 @@
           <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
-          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="162"></pl-table-column>
+          <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
           <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
@@ -350,7 +363,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="buySubmit">确 定</el-button>
+        <el-button type="primary" @click="buyCheckRepeat">确 定</el-button>
         <el-button @click="closeBuyModal">取 消</el-button>
       </div>
     </el-dialog>
@@ -677,6 +690,7 @@
     taskStateNum,
     rateList,
     taskBuy,
+    taskBuyCheck,
     taskState,
     taskStateMore,
     taskComment,
@@ -711,7 +725,8 @@
           type: '0',
           types: '0',
           time: [],
-          serveType: '0'
+          serveType: '0',
+          repeat: '0'
         },
         all: 0, //全部
         dfp: 0, //待分配
@@ -750,6 +765,7 @@
           }
         },
         taskId: '', //选中的任务id
+        countryId: '', //选中的国家id
         rateData: [], //汇率数据
         symbol: '', //货币符号
         rate: '', //货币汇率
@@ -943,6 +959,7 @@
           startTime: time1,
           endTime: time2,
           ServerType: _this.searchForm.serveType,
+          RepeatState: _this.searchForm.repeat,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize,
           RoolId: roleId
@@ -990,6 +1007,7 @@
           startTime: time1,
           endTime: time2,
           ServerType: _this.searchForm.serveType,
+          RepeatState: _this.searchForm.repeat,
           RoolId: roleId
         }
         taskStateNum(params).then(res => {
@@ -1095,53 +1113,80 @@
         _this.serviceFei = row.OrderUnitPriceSerCharge //服务费
         _this.rate = row.OrderExchangeRate //汇率
         _this.taskId = row.Id
+        _this.countryId = row.CountryId
         _this.getRateInfo(row.CountryId)
       },
 
+      //购买前先查重
+      buyCheckRepeat() {
+        let _this = this
+        _this.$refs.buyForm.validate((valid) => {
+          if (valid) {
+            let params = {
+              AmazonNumber: _this.buyForm.AmazonNumber,
+              Asin: _this.taskFormView.Asin,
+              ProductName: _this.taskFormView.ProductName,
+              CountryId: _this.countryId
+            }
+            taskBuyCheck(params).then(res => {
+              let repeatState = res.Data
+              if (repeatState == '1') {
+                _this.$confirm('系统检测到您所填写的为重复任务，是否执意要购买？', '信息提示', {
+                  type: 'warning'
+                }).then(() => {
+                  _this.buySubmit(repeatState)
+                })
+              }
+              if (repeatState == '0') {
+                _this.buySubmit(repeatState)
+              }
+            }).catch((e) => {})
+          }
+        })
+      },
+
       // 购买
-      buySubmit() {
+      buySubmit(repeatState) {
         let _this = this
         let userId = sessionStorage.getItem('userId')
         let ServiceType = _this.taskFormView.ServiceType
         let params = {}
-        _this.$refs.buyForm.validate((valid) => {
-          if (valid) {
-            if (ServiceType == 1) {
-              params = Object.assign({}, this.buyForm)
-              if (params.Freight == '') {
-                params.Freight = 0
-              }
-              if (params.Taxation == '') {
-                params.Taxation = 0
-              }
-              if (params.Other == '') {
-                params.Other = 0
-              }
-              params.Type = ServiceType
-              params.TaskId = _this.taskId
-              params.Id = userId
-            } else {
-              params = {
-                PayAccount: _this.buyForm.PayAccount,
-                BuyingTime: _this.buyForm.BuyingTime,
-                AmazonNumber: _this.buyForm.AmazonNumber,
-                AmazonProductPrice: _this.buyForm.AmazonProductPrice,
-                Type: ServiceType,
-                TaskId: _this.taskId,
-                Id: userId,
-                Image: _this.buyForm.Image,
-                BuyRemarks: _this.buyForm.BuyRemarks
-              }
-            }
-            //核算总金额(总额+增值服+服务费)
-            params.Total = (Number(_this.totalValue) + Number(_this.addFee) + Number(_this.serviceFei)).toFixed(2)
-            taskBuy(params).then(res => {
-              _this.closeBuyModal()
-              _this.getAllData()
-              _this.getTaskStateNum()
-            }).catch((e) => {})
+        if (ServiceType == 1) {
+          params = Object.assign({}, this.buyForm)
+          if (params.Freight == '') {
+            params.Freight = 0
           }
-        })
+          if (params.Taxation == '') {
+            params.Taxation = 0
+          }
+          if (params.Other == '') {
+            params.Other = 0
+          }
+          params.Type = ServiceType
+          params.TaskId = _this.taskId
+          params.Id = userId
+          params.RepeatState = repeatState
+        } else {
+          params = {
+            PayAccount: _this.buyForm.PayAccount,
+            BuyingTime: _this.buyForm.BuyingTime,
+            AmazonNumber: _this.buyForm.AmazonNumber,
+            AmazonProductPrice: _this.buyForm.AmazonProductPrice,
+            Type: ServiceType,
+            TaskId: _this.taskId,
+            Id: userId,
+            Image: _this.buyForm.Image,
+            BuyRemarks: _this.buyForm.BuyRemarks,
+            RepeatState: repeatState
+          }
+        }
+        //核算总金额(总额+增值服+服务费)
+        params.Total = (Number(_this.totalValue) + Number(_this.addFee) + Number(_this.serviceFei)).toFixed(2)
+        taskBuy(params).then(res => {
+          _this.closeBuyModal()
+          _this.getAllData()
+          _this.getTaskStateNum()
+        }).catch((e) => {})
       },
 
       // 关闭购买弹窗
@@ -1403,6 +1448,7 @@
         _this.searchForm.types = '0'
         _this.searchForm.time = []
         _this.searchForm.serveType = '0'
+        _this.searchForm.repeat = '0'
         _this.currentPage = 1
         _this.getAllData()
         _this.getTaskStateNum()

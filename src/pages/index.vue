@@ -353,7 +353,8 @@
           Diff: 0,
           startTime: '',
           endTime: '',
-          ServerType: 0
+          ServerType: 0,
+          RepeatState: 0
         }
         taskStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部

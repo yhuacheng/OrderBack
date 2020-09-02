@@ -64,6 +64,7 @@ export const orderFeeEdit = (params) => post('/api/Order/ChangeOrderInformation'
 export const taskList = (params) => get('/api/Task/GetTaskList', params) //任务列表
 export const taskStateNum = (params) => post('/api/Task/GetState', params) //任务不同状态下的数量
 export const taskBuy = (params) => post('/api/Task/ChangeBuyingTwo', params) //确认购买
+export const taskBuyCheck = (params) => post('/api/Task/GetRepeat', params) //确认购买时查询任务是否重复
 export const taskState = (params) => post('/api/Task/ChangeTaskCancel', params) //任务取消
 export const taskStateMore = (params) => post('/api/Task/BatchChangeTaskState', params) //批量任务取消
 export const taskComment = (params) => post('/api/Task/ChangeTaskFour', params) //任务评价
