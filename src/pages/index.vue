@@ -39,7 +39,7 @@
       </el-col>
       <el-col :span="3" :xs="12">
         <div class="items">
-          <div class="grid">7天未分配的任务</div>
+          <div class="grid">7天未分配的订单</div>
           <div class="nums danger">{{taskNoAllot}}</div>
         </div>
       </el-col>
