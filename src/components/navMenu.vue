@@ -88,6 +88,7 @@
         //财务
         if (roleId.indexOf(3) >= 0) {
           _this.menu.index = true
+          _this.menu.task = true
           _this.menu.customer = true
           _this.menu.takemoney = true
         }

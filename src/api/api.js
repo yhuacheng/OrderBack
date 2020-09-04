@@ -72,6 +72,7 @@ export const taskView = (params) => get('/api/Task/TaskDetails', params) //任�
 export const taskFeeEdit = (params) => post('/api/Task/ChangeTaskServicechargeAndExchangeRate', params) //任务服务费汇率修改
 export const taskBindOut = (params) => post('/api/Task/TaskAgainBaskUser', params) //任务外派
 export const taskAgain = (params) => post('/api/Task/AgainTask', params) //任务追加
+export const payBYmoney = (params) => post('/api/Task/CommissionExpenditure', params) //任务本佣付款
 
 export const customerCount = (params) => get('/api/Login/GetHomeUser', params) //首页统计(客户)
 export const orderCount = (params) => get('/api/Login/GetHomeOrder', params) //首页统计(订单)

@@ -21,8 +21,6 @@
                     style="width: 100%;"></el-date-picker>
                 </el-form-item>
               </el-col>
-            </el-row>
-            <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="订单类型">
                   <el-select v-model="searchForm.serveType" placeholder="请选择" size="small">
@@ -32,6 +30,8 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
@@ -67,6 +67,17 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :xs="24" :span="4" v-if='In'>
+                <el-form-item label="本佣付款">
+                  <el-select v-model="searchForm.payState" placeholder="请选择" size="small">
+                    <el-option value="0" label="全部"></el-option>
+                    <el-option value="1" label="本佣均已付"></el-option>
+                    <el-option value="2" label="本佣均未付"></el-option>
+                    <el-option value="3" label="付本未付佣"></el-option>
+                    <el-option value="4" label="付佣未付本"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
               <el-col :xs="24" :span="4">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
@@ -88,7 +99,9 @@
           size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i> 批量取消</el-button>
         <el-button type="danger" size="small" v-if="btnShow" :disabled="disabledEditFee" @click="userModalShow(2)">
           <i class="el-icon-user-solid"></i> 转派</el-button>
-        <el-button type="warning" size="small" v-if="menuBtnShow" @click="exportExcel"><i class="el-icon-upload2"></i>
+        <el-button type="primary" size="small" v-if="CWbtnShow" :disabled="disabled" @click="payModalShow">
+          <i class="el-icon-coin"></i> 本佣付款</el-button>
+        <el-button type="warning" size="small" v-if="menuBtnShow||CWbtnShow" @click="exportExcel"><i class="el-icon-upload2"></i>
           导出</el-button>
         <div class="tagMenu mt20 mb20" style="float: none">
           <el-badge :value="all" type="success" class="item">
@@ -139,13 +152,13 @@
                 <el-form-item label="总额：" v-if='In'>
                   <span>{{ props.row.Total }}</span>
                 </el-form-item>
-                <el-form-item label="改后服务费：" v-if='Out'>
+                <el-form-item label="改后服务费：" v-if='In || Out'>
                   <span>{{ props.row.TaskUnitPriceSerCharge }}</span>
                 </el-form-item>
-                <el-form-item label="改后汇率：" v-if='Out'>
+                <el-form-item label="改后汇率：" v-if='In || Out'>
                   <span>{{ props.row.TaskExchangeRate }}</span>
                 </el-form-item>
-                <el-form-item label="改后总额：" v-if='Out'>
+                <el-form-item label="改后总额：" v-if='In || Out'>
                   <span>{{ props.row.NewTaskTotal }}</span>
                 </el-form-item>
                 <el-form-item label="差额：" v-if='In'>
@@ -166,10 +179,10 @@
                 <el-form-item label="返款金额：">
                   <span>{{ props.row.DealMoeny }}</span>
                 </el-form-item>
-                <el-form-item label="订单备注：" style="width: 100%;">
+                <el-form-item label="订单备注：" style="width: 50%;">
                   <span>{{ props.row.OrderRemarks }}</span>
                 </el-form-item>
-                <el-form-item label="任务备注：" style="width: 100%;">
+                <el-form-item label="任务备注：" style="width: 50%;">
                   <span>{{ props.row.Remarks }}</span>
                 </el-form-item>
               </el-form>
@@ -204,7 +217,16 @@
           <pl-table-column prop="Asin" label="ASIN" align="center" width="118"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
-          <pl-table-column prop="ExecutionTime" label="执行时间" align="center" width="142"></pl-table-column>
+          <pl-table-column prop="PayPrincipal" label="付本" align="center">
+            <template slot-scope="scope">
+              <span class="danger">{{scope.row.PayPrincipal}}</span>
+            </template>
+          </pl-table-column>
+          <pl-table-column prop="PayCommission" label="付佣" align="center">
+            <template slot-scope="scope">
+              <span class="danger">{{scope.row.PayCommission}}</span>
+            </template>
+          </pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
@@ -227,7 +249,7 @@
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
           </pl-table-column>
-          <pl-table-column v-if="tableBtnShow" prop="TaskState" label="操作" align="center" width="155">
+          <pl-table-column v-if="tableBtnShow" prop="TaskState" label="操作" align="center" width="130">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="btnShow2 && (scope.row.TaskState==2 || scope.row.TaskState==8)"
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
@@ -676,6 +698,21 @@
         <el-button @click="userModal=false">关 闭</el-button>
       </div>
     </el-dialog>
+    <!--本佣付款-->
+    <el-dialog :title="titlePay" width="30%" :visible.sync="payModal" :close-on-click-modal="false" :before-close="closePayModal">
+      <el-form :model="payForm" ref="payForm" :rules='RulesPay' label-width='60px' status-icon>
+        <el-form-item label="本金" prop="principal">
+          <el-input v-model="payForm.principal"></el-input>
+        </el-form-item>
+        <el-form-item label="佣金" prop="commission">
+          <el-input v-model="payForm.commission"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="paySubmit" :disabled="!payForm.principal&&!payForm.commission">确 定</el-button>
+        <el-button @click="closePayModal">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -700,7 +737,8 @@
     orderTaskBind,
     taskBindOut,
     taskAgain,
-    countryList
+    countryList,
+    payBYmoney
   } from '@/api/api';
   export default {
     name: 'task',
@@ -718,6 +756,7 @@
         checkBoxData: [], //选中数据
         menuBtnShow: false, //是否显示列表上方菜单按钮
         tableBtnShow: false, //是否显示列表中的操作按钮
+        CWbtnShow: false, //财务按钮
         searchForm: {
           searchWords: '',
           state: 0,
@@ -726,7 +765,8 @@
           types: '0',
           time: [],
           serveType: '0',
-          repeat: '0'
+          repeat: '0',
+          payState: '0'
         },
         all: 0, //全部
         dfp: 0, //待分配
@@ -855,6 +895,24 @@
             }
           ]
         },
+        payModal: false,
+        titlePay: '',
+        payForm: {
+          principal: '',
+          commission: ''
+        },
+        RulesPay: {
+          principal: [{
+            pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+            message: '本金格式不正确',
+            trigger: 'blur'
+          }],
+          commission: [{
+            pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+            message: '佣金格式不正确',
+            trigger: 'blur'
+          }]
+        },
         userListTitle: '',
         userModal: false,
         tableData2: [],
@@ -924,6 +982,10 @@
         if (x >= 0 || y >= 0 || z >= 0) {
           _this.menuBtnShow = true
         }
+        //判断如果有财务权限则显示财务对应的按钮(本佣付款、导出)
+        if (c >= 0) {
+          _this.CWbtnShow = true
+        }
         //判断如果不是业务员并且不是子管理员（子管理员无法购买评价取消等）则显示列表中的操作按钮
         if (x >= 0 || z >= 0 || w >= 0) {
           _this.tableBtnShow = true
@@ -932,10 +994,9 @@
         } else {
           _this.tableBtnShow = false
         }
-        //根据角色判断列表显示哪些列(管理员、子管理员、操作员、业务员显示所有；外派员显示改后服务费、改后汇率、改后总额)
-        if (x >= 0 || y >= 0 || z >= 0 || s >= 0) {
+        //根据角色判断列表显示哪些列(管理员、子管理员、操作员、业务员、财务显示所有；外派员显示改后服务费、改后汇率、改后总额)
+        if (x >= 0 || y >= 0 || z >= 0 || c >= 0 || s >= 0) {
           _this.In = true
-          _this.Out = true
         }
         if (w >= 0) {
           _this.Out = true
@@ -960,6 +1021,7 @@
           endTime: time2,
           ServerType: _this.searchForm.serveType,
           RepeatState: _this.searchForm.repeat,
+          PayState: _this.searchForm.payState,
           pageNum: _this.currentPage,
           pagesize: _this.pageSize,
           RoolId: roleId
@@ -1008,6 +1070,7 @@
           endTime: time2,
           ServerType: _this.searchForm.serveType,
           RepeatState: _this.searchForm.repeat,
+          PayState: _this.searchForm.payState,
           RoolId: roleId
         }
         taskStateNum(params).then(res => {
@@ -1125,7 +1188,6 @@
             let params = {
               AmazonNumber: _this.buyForm.AmazonNumber,
               Asin: _this.taskFormView.Asin,
-              ProductName: _this.taskFormView.ProductName,
               CountryId: _this.countryId
             }
             taskBuyCheck(params).then(res => {
@@ -1207,7 +1269,6 @@
           BuyRemarks: ''
         }
         _this.imageUrl = ''
-
       },
 
       // 评价弹窗
@@ -1449,6 +1510,7 @@
         _this.searchForm.time = []
         _this.searchForm.serveType = '0'
         _this.searchForm.repeat = '0'
+        _this.searchForm.payState = '0'
         _this.currentPage = 1
         _this.getAllData()
         _this.getTaskStateNum()
@@ -1610,6 +1672,45 @@
         }).catch((e) => {})
       },
 
+      //打开本佣付款弹窗
+      payModalShow() {
+        let _this = this
+        let TaskNum = _this.checkBoxData[0].OrderNumbers
+        _this.payForm.principal = _this.checkBoxData[0].PayPrincipal
+        _this.payForm.commission = _this.checkBoxData[0].PayCommission
+        _this.titlePay = '任务【' + TaskNum + '】本佣付款'
+        _this.payModal = true
+      },
+
+      // 录入修改本佣付款
+      paySubmit() {
+        let _this = this
+        _this.$refs.payForm.validate((valid) => {
+          if (valid) {
+            let params = {
+              Tid: _this.checkBoxData[0].Id,
+              PayPrincipal: _this.payForm.principal,
+              PayCommission: _this.payForm.commission
+            }
+            payBYmoney(params).then(res => {
+              _this.closePayModal()
+              _this.getAllData()
+            }).catch((e) => {})
+          }
+        })
+      },
+
+      //关闭本佣付款弹窗
+      closePayModal() {
+        let _this = this
+        _this.payModal = false
+        _this.$refs['payForm'].resetFields()
+        _this.payForm = {
+          principal: '',
+          commission: ''
+        }
+      },
+
       //复制任务编号
       copy(index, row) {
         let oInput = document.createElement('input');
@@ -1718,6 +1819,16 @@
           {
             title: '客户编码',
             key: 'CustomerUserId',
+            type: 'text'
+          },
+          {
+            title: '付本',
+            key: 'PayPrincipal',
+            type: 'text'
+          },
+          {
+            title: '付佣',
+            key: 'PayCommission',
             type: 'text'
           },
           {
@@ -1886,9 +1997,9 @@
   }
 
   .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 15%;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    width: 16.666%;
   }
 
   /* 扩大展开箭头的点击范围 */

@@ -354,7 +354,8 @@
           startTime: '',
           endTime: '',
           ServerType: 0,
-          RepeatState: 0
+          RepeatState: 0,
+          PayState: 0
         }
         taskStateNum(params).then(res => {
           let all = Number(res.list[0].TotalCount) //全部
