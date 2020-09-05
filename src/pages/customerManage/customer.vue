@@ -518,10 +518,10 @@
         }
         customerBalance(params).then(res => {
           _this.tableData2 = res.list
+          _this.total2 = Number(res.total)
           _this.allNow = res.list[0].AccountBalance
           _this.allIn = res.list[0].AccumulatedIncone
           _this.allOut = res.list[0].AccumulatedExpenditure
-          _this.total2 = Number(res.total)
         }).catch((e) => {})
       },
 
