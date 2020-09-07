@@ -95,9 +95,10 @@
           <i class="el-icon-place"></i> 外派</el-button>
         <el-button type="success" size="small" v-if="menuBtnShow" :disabled="disabled" @click="TaskAgainShow">
           <i class="el-icon-circle-plus-outline"></i> 追加任务</el-button>
-        <el-button v-if="btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7" type="danger"
-          size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i> 批量取消</el-button>
-        <el-button type="danger" size="small" v-if="btnShow" :disabled="disabledEditFee" @click="userModalShow(2)">
+        <el-button v-if="(btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7) || (btnShow4 && searchForm.state==8)"
+          type="danger" size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i>
+          批量取消</el-button>
+        <el-button type="danger" size="small" v-if="btnShow3" :disabled="disabledEditFee" @click="userModalShow(2)">
           <i class="el-icon-user-solid"></i> 转派</el-button>
         <el-button type="primary" size="small" v-if="CWbtnShow" :disabled="disabled" @click="payModalShow">
           <i class="el-icon-coin"></i> 本佣付款</el-button>
@@ -255,7 +256,7 @@
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
               <el-button size="small" type="warning" v-if="btnShow2 && (scope.row.TaskState==4 || scope.row.TaskState==5)"
                 @click.stop="commentModalShow(scope.$index,scope.row)">评价</el-button>
-              <el-button size="small" type="danger" v-if="btnShow && scope.row.TaskState!=6 && scope.row.TaskState!=7"
+              <el-button size="small" type="danger" v-if="(btnShow && scope.row.TaskState!=6 && scope.row.TaskState!=7) || (btnShow4 && scope.row.TaskState==8)"
                 @click.stop="changeState(scope.$index,scope.row)">取消</el-button>
             </template>
           </pl-table-column>
@@ -815,6 +816,8 @@
         handMoney: '', //官方固定费率
         btnShow: false, //判断是否显示取消按钮
         btnShow2: false, //判断是否显示购买与评价按钮
+        btnShow3: false, //判断是否显示转派按钮
+        btnShow4: false, //判断子管理员是否显示取消按钮
         Rules: {
           BuyingTime: [{
             required: true,
@@ -970,13 +973,21 @@
         } else {
           show = 'No'
         }
-        //判断如果有管理员权限则显示取消按钮
+        //判断如果有管理员权限则显示取消按钮（另附加状态条件）
         if (x >= 0) {
           _this.btnShow = true
+        }
+        //判断如果有子管理员权限则显示取消按钮（另附加状态条件）
+        if (y >= 0) {
+          _this.btnShow4 = true
         }
         //判断如果是操作员或外派员则显示列表中的购买与评价按钮
         if (z >= 0 || w >= 0) {
           _this.btnShow2 = true
+        }
+        //判断如果有管理员权限或者子管理员权限则显示转派按钮
+        if (x >= 0 || y >= 0) {
+          _this.btnShow3 = true
         }
         //判断如不是外派员并且不是业务员则显示列表上方操作按钮
         if (x >= 0 || y >= 0 || z >= 0) {
@@ -986,8 +997,8 @@
         if (c >= 0) {
           _this.CWbtnShow = true
         }
-        //判断如果不是业务员并且不是子管理员（子管理员无法购买评价取消等）则显示列表中的操作按钮
-        if (x >= 0 || z >= 0 || w >= 0) {
+        //判断如果不是业务员则显示列表中的操作按钮
+        if (x >= 0 || y >= 0 || z >= 0 || w >= 0) {
           _this.tableBtnShow = true
         } else if (s >= 0) {
           _this.tableBtnShow = false
