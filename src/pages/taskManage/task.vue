@@ -180,10 +180,13 @@
                 <el-form-item label="返款金额：">
                   <span>{{ props.row.DealMoeny }}</span>
                 </el-form-item>
-                <el-form-item label="订单备注：" style="width: 50%;">
+                <el-form-item label="订单备注：" style="width: calc(100% - 5px);">
                   <span>{{ props.row.OrderRemarks }}</span>
                 </el-form-item>
-                <el-form-item label="任务备注：" style="width: 50%;">
+                <el-form-item label="购买备注：" style="width: calc(100% - 5px);">
+                  <span>{{ props.row.BuyRemarks }}</span>
+                </el-form-item>
+                <el-form-item label="任务备注：" style="width: calc(100% - 5px);">
                   <span>{{ props.row.Remarks }}</span>
                 </el-form-item>
               </el-form>
@@ -1873,8 +1876,13 @@
             type: 'text'
           },
           {
-            title: '返款时间',
-            key: 'DealTime',
+            title: '购买价格',
+            key: 'AmazonProductPrice',
+            type: 'text'
+          },
+          {
+            title: '购买备注',
+            key: 'BuyRemarks',
             type: 'text'
           },
           {
@@ -1883,8 +1891,8 @@
             type: 'text'
           },
           {
-            title: '产品金额',
-            key: 'AmazonProductPrice',
+            title: '返款时间',
+            key: 'DealTime',
             type: 'text'
           },
           {
@@ -2011,6 +2019,9 @@
     margin-right: 0 !important;
     margin-bottom: 0 !important;
     width: 16.666%;
+    border: 1px dashed #BBBBBB;
+    margin-left: -1px;
+    margin-top: -1px;
   }
 
   /* 扩大展开箭头的点击范围 */
