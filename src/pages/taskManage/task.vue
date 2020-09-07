@@ -95,13 +95,13 @@
           <i class="el-icon-place"></i> 外派</el-button>
         <el-button type="success" size="small" v-if="menuBtnShow" :disabled="disabled" @click="TaskAgainShow">
           <i class="el-icon-circle-plus-outline"></i> 追加任务</el-button>
-        <el-button v-if="(btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7) || (btnShow4 && searchForm.state==8)"
-          type="danger" size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i>
-          批量取消</el-button>
         <el-button type="danger" size="small" v-if="btnShow3" :disabled="disabledEditFee" @click="userModalShow(2)">
           <i class="el-icon-user-solid"></i> 转派</el-button>
         <el-button type="primary" size="small" v-if="CWbtnShow" :disabled="disabled" @click="payModalShow">
           <i class="el-icon-coin"></i> 本佣付款</el-button>
+        <el-button v-if="(btnShow && searchForm.state!=0 && searchForm.state!=6 && searchForm.state!=7) || (btnShow4 && searchForm.state==8)"
+          type="danger" size="small" @click="changeStateMore" :disabled="disabledMore"><i class="el-icon-circle-close"></i>
+          批量取消</el-button>
         <el-button type="warning" size="small" v-if="menuBtnShow||CWbtnShow" @click="exportExcel"><i class="el-icon-upload2"></i>
           导出</el-button>
         <div class="tagMenu mt20 mb20" style="float: none">
@@ -215,7 +215,7 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="CountryName" label="国家" align="center"></pl-table-column>
-          <pl-table-column prop="Asin" label="ASIN" align="center" width="118"></pl-table-column>
+          <pl-table-column prop="Asin" label="ASIN" align="center" width="112"></pl-table-column>
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="CustomerUserId" label="客户编码" align="center"></pl-table-column>
           <pl-table-column prop="PayPrincipal" label="付本" align="center">
@@ -229,9 +229,9 @@
             </template>
           </pl-table-column>
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
-          <pl-table-column prop="Name1" label="外派员" align="center"></pl-table-column>
+          <pl-table-column prop="Name1" label="外派员" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
-          <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
+          <pl-table-column prop="AddTime" label="填单时间" align="center" width="141"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
@@ -250,7 +250,7 @@
               <span v-if="scope.row.TaskState==8" class="warning">异常</span>
             </template>
           </pl-table-column>
-          <pl-table-column v-if="tableBtnShow" prop="TaskState" label="操作" align="center" width="130">
+          <pl-table-column v-if="tableBtnShow" prop="TaskState" label="操作" align="center" width="145">
             <template slot-scope="scope">
               <el-button size="small" type="primary" v-if="btnShow2 && (scope.row.TaskState==2 || scope.row.TaskState==8)"
                 @click.stop="buyModalShow(scope.$index,scope.row)">购买</el-button>
