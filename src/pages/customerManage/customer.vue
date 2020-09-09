@@ -35,7 +35,10 @@
         <el-button v-if="btnShow2" type="danger" size="small" :disabled="disabled" @click="deductionModalShow">
           <i class="el-icon-remove-outline"></i> 扣款</el-button>
         <el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出</el-button>
-        <el-button class="fright" type="primary" size="small" @click="viewLog"><i class="el-icon-tickets"></i> 客户日志</el-button>
+        <span class="fright" >
+        <el-button type="success" size="small" @click="viewMoney"><i class="el-icon-tickets"></i> 客户交易记录</el-button>
+        <el-button type="danger" size="small" @click="viewLog"><i class="el-icon-tickets"></i> 客户充值扣款记录</el-button>
+        </span>
       </div>
       <div class="mt10">
         <el-table border :data="tableData" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
@@ -569,7 +572,12 @@
         _this.getBalanceData()
       },
 
-      //跳转到客户日志
+      //跳转到客户交易记录
+      viewMoney() {
+        this.$router.push('/customerMoney')
+      },
+
+      //跳转到客户充值扣款记录
       viewLog() {
         this.$router.push('/customerLog')
       },

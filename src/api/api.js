@@ -41,7 +41,8 @@ export const customerList = (params) => get('/api/CustomerAppointment/GetCustome
 export const customerState = (params) => post('/api/CustomerAppointment/ChangeCustomerState', params) //更改客户状态
 export const customerRecharge = (params) => post('/api/CustomerAppointment/ChangeAccountbalance', params) //客户充值扣款
 export const customerBalance = (params) => get('/api/CustomerAppointment/GetAccountbalance', params) //客户余额信息
-export const customerLog = (params) => get('/api/CustomerAppointment/GetBackAppoinmentLog', params) //客户日志
+export const customerMoney = (params) => get('/api/CustomerAppointment/GetAccount', params) //客户交易记录
+export const customerLog = (params) => get('/api/CustomerAppointment/GetBackAppoinmentLog', params) //客户充值提现记录
 export const customerBindUser = (params) => post('/api/CustomerAppointment/CustomerBindUser', params) //客户重新分配所属用户
 
 export const takemoneyList = (params) => get('/api/DrawMoney/GetDrawMoneyList', params) //客户提现列表

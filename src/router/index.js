@@ -44,12 +44,20 @@ export default new Router({
 						title: '客户管理'
 					}
 				},
+        {
+        	path: '/customerMoney',
+        	name: 'customerMoney',
+        	component: resolve => require(['../pages/customerManage/customerMoney.vue'], resolve),
+        	meta: {
+        		title: '客户交易记录'
+        	}
+        },
 				{
 					path: '/customerLog',
 					name: 'customerLog',
 					component: resolve => require(['../pages/customerManage/customerLog.vue'], resolve),
 					meta: {
-						title: '客户日志'
+						title: '客户充值扣款记录'
 					}
 				},
 				{

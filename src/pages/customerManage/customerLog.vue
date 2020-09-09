@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<div class="mb20 fz14">
-			<span>客户日志</span>
+			<span>客户充值扣款记录</span>
 		</div>
 		<div class="mt10">
 			<el-collapse-transition>
@@ -44,7 +44,7 @@
 					<div></div>
 					<div>
 						<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-						 :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total">
+						 :page-sizes="[10, 20, 50, 100, 1000, 10000]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total">
 						</el-pagination>
 					</div>
 				</div>
@@ -134,7 +134,7 @@
 				try {
 					FileSaver.saveAs(new Blob([wbout], {
 						type: 'application/octet-stream'
-					}), '客户日志.xlsx')
+					}), '客户充值扣款记录.xlsx')
 				} catch (e) {
 					if (typeof console !== 'undefined') {
 						console.log(e, wbout)
