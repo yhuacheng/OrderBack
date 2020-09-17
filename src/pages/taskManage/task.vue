@@ -1323,7 +1323,7 @@
           if (valid) {
             // 如果是需要评论的单,评价链接和评论图片必须二选一填写;如果是免评单不要填写评价链接,评论图片可填可不填.(1为免评)
             if (val != 1) {
-              if (link == '' && image == '') {
+              if (!link && !image) {
                 this.$message.error('评价链接和评价截图必须至少填写一项！')
               } else {
                 taskComment(params).then(res => {
@@ -1333,7 +1333,7 @@
                 }).catch((e) => {})
               }
             } else {
-              if (link != '') {
+              if (link) {
                 this.$message.error('免评单请不要填写评价链接！')
               } else {
                 taskComment(params).then(res => {
