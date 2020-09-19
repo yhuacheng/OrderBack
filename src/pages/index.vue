@@ -353,6 +353,10 @@
           Diff: 0,
           startTime: '',
           endTime: '',
+          startEvaluateTime: '',
+          endEvaluateTime: '',
+          startDealTime: '',
+          endDealTime: '',
           ServerType: 0,
           RepeatState: 0,
           PayState: 0

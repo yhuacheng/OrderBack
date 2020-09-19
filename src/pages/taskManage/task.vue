@@ -21,6 +21,22 @@
                     style="width: 100%;"></el-date-picker>
                 </el-form-item>
               </el-col>
+              <el-col :xs="24" :span="8">
+                <el-form-item label="上评时间">
+                  <el-date-picker size="small" v-model="searchForm.timeSP" :unlink-panels='true' type="datetimerange"
+                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
+                    style="width: 100%;"></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :xs="24" :span="8">
+                <el-form-item label="返款时间">
+                  <el-date-picker size="small" v-model="searchForm.timeFK" :unlink-panels='true' type="datetimerange"
+                    range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
+                    style="width: 100%;"></el-date-picker>
+                </el-form-item>
+              </el-col>
               <el-col :xs="24" :span="4">
                 <el-form-item label="订单类型">
                   <el-select v-model="searchForm.serveType" placeholder="请选择" size="small">
@@ -30,8 +46,6 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-            </el-row>
-            <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="国家">
                   <el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
@@ -58,6 +72,8 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+            </el-row>
+            <el-row>
               <el-col :xs="24" :span="4">
                 <el-form-item label="是否重复">
                   <el-select v-model="searchForm.repeat" placeholder="请选择" size="small">
@@ -78,10 +94,10 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :span="4">
+              <el-col :xs="24" :span="8">
                 <el-form-item>
                   <el-button type="primary" size="small" @click="searchData(0)">查询</el-button>
-                  <el-button size="small" @click="resetSearch">重置</el-button>
+                  <el-button size="small" @click="resetSearch" style="margin-left: 10px;">重置</el-button>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -180,6 +196,12 @@
                 <el-form-item label="返款金额：">
                   <span>{{ props.row.DealMoeny }}</span>
                 </el-form-item>
+                <el-form-item label="上评时间：">
+                  <span>{{ props.row.EvaluateTime }}</span>
+                </el-form-item>
+                <el-form-item label="PP账号：">
+                  <span>{{ props.row.PayAccount }}</span>
+                </el-form-item>
                 <el-form-item label="订单备注：" style="width: calc(100% - 5px);">
                   <span>{{ props.row.OrderRemarks }}</span>
                 </el-form-item>
@@ -234,7 +256,7 @@
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
-          <pl-table-column prop="AddTime" label="填单时间" align="center" width="141"></pl-table-column>
+          <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
@@ -768,6 +790,8 @@
           type: '0',
           types: '0',
           time: [],
+          timeSP: [],
+          timeFK: [],
           serveType: '0',
           repeat: '0',
           payState: '0'
@@ -1019,9 +1043,23 @@
         let time = _this.searchForm.time
         let time1 = ''
         let time2 = ''
-        if (time != '' && time != null) {
+        if (time.length > 0) {
           time1 = time[0]
           time2 = time[1]
+        }
+        let timeSP = _this.searchForm.timeSP
+        let timeSP1 = ''
+        let timeSP2 = ''
+        if (timeSP.length > 0) {
+          timeSP1 = timeSP[0]
+          timeSP2 = timeSP[1]
+        }
+        let timeFK = _this.searchForm.timeFK
+        let timeFK1 = ''
+        let timeFK2 = ''
+        if (timeFK.length > 0) {
+          timeFK1 = timeFK[0]
+          timeFK2 = timeFK[1]
         }
         let params = {
           id: userId,
@@ -1033,6 +1071,10 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          startEvaluateTime: timeSP1,
+          endEvaluateTime: timeSP2,
+          startDealTime: timeFK1,
+          endDealTime: timeFK2,
           ServerType: _this.searchForm.serveType,
           RepeatState: _this.searchForm.repeat,
           PayState: _this.searchForm.payState,
@@ -1069,9 +1111,23 @@
         let time = _this.searchForm.time
         let time1 = ''
         let time2 = ''
-        if (time != '' && time != null) {
+        if (time.length > 0) {
           time1 = time[0]
           time2 = time[1]
+        }
+        let timeSP = _this.searchForm.timeSP
+        let timeSP1 = ''
+        let timeSP2 = ''
+        if (timeSP.length > 0) {
+          timeSP1 = timeSP[0]
+          timeSP2 = timeSP[1]
+        }
+        let timeFK = _this.searchForm.timeFK
+        let timeFK1 = ''
+        let timeFK2 = ''
+        if (timeFK.length > 0) {
+          timeFK1 = timeFK[0]
+          timeFK2 = timeFK[1]
         }
         let params = {
           Id: userId,
@@ -1082,6 +1138,10 @@
           Diff: _this.searchForm.types,
           startTime: time1,
           endTime: time2,
+          startEvaluateTime: timeSP1,
+          endEvaluateTime: timeSP2,
+          startDealTime: timeFK1,
+          endDealTime: timeFK2,
           ServerType: _this.searchForm.serveType,
           RepeatState: _this.searchForm.repeat,
           PayState: _this.searchForm.payState,
@@ -1522,6 +1582,8 @@
         _this.searchForm.type = '0'
         _this.searchForm.types = '0'
         _this.searchForm.time = []
+        _this.searchForm.timeSP = []
+        _this.searchForm.timeFK = []
         _this.searchForm.serveType = '0'
         _this.searchForm.repeat = '0'
         _this.searchForm.payState = '0'
@@ -1888,6 +1950,16 @@
           {
             title: '任务备注',
             key: 'Remarks',
+            type: 'text'
+          },
+          {
+            title: 'PP账号',
+            key: 'PayAccount',
+            type: 'text'
+          },
+          {
+            title: '上评时间',
+            key: 'EvaluateTime',
             type: 'text'
           },
           {
