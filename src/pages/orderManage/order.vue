@@ -1066,6 +1066,11 @@
             type: 'text'
           },
           {
+            title: '国家ID',
+            key: 'CountryId',
+            type: 'text'
+          },
+          {
             title: 'ASIN',
             key: 'ASIN',
             type: 'text'
