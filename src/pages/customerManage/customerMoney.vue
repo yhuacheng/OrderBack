@@ -13,14 +13,16 @@
         <pl-table-column prop="Name" label="客户名称" align="center"></pl-table-column>
         <pl-table-column prop="PaymentState" label="收支类型" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.PaymentState==1" class="success">余额收入</span>
-            <span v-if="scope.row.PaymentState==2" class="danger">余额支出</span>
+            <span v-if="scope.row.PaymentState==1" class="success">收入</span>
+            <span v-if="scope.row.PaymentState==2" class="danger">支出</span>
+            <span v-if="scope.row.PaymentState==3" class="warning">退单返本</span>
           </template>
         </pl-table-column>
         <pl-table-column prop="TransactionAmount" class="danger" label="金额" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.PaymentState==1" class="success">{{scope.row.TransactionAmount}}</span>
             <span v-if="scope.row.PaymentState==2" class="danger">{{scope.row.TransactionAmount}}</span>
+            <span v-if="scope.row.PaymentState==3" class="warning">{{scope.row.TransactionAmount}}</span>
           </template>
         </pl-table-column>
         <pl-table-column prop="TransactionTime" label="交易时间" align="center"></pl-table-column>
