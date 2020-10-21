@@ -131,6 +131,8 @@
           <pl-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="Brand" label="品牌" align="center" :show-overflow-tooltip='true'></pl-table-column>
+          <pl-table-column prop="Place" label="产品位置" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="Number" label="任务数" align="center"></pl-table-column>
           <pl-table-column prop="ProductPrice" label="产品价格" align="center"></pl-table-column>
           <pl-table-column prop="Totalproductprice" label="产品总额" align="center"></pl-table-column>
@@ -1088,6 +1090,16 @@
           {
             title: '关键词',
             key: 'ProductKeyWord',
+            type: 'text'
+          },
+          {
+            title: '品牌',
+            key: 'Brand',
+            type: 'text'
+          },
+          {
+            title: '产品位置',
+            key: 'Place',
             type: 'text'
           },
           {
