@@ -256,14 +256,14 @@
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
-          <pl-table-column prop="AddTime" label="填单时间" align="center" width="142"></pl-table-column>
+          <pl-table-column prop="AddTime" label="填单时间" align="center" width="150" sortable></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
                 @click.stop="showImage(scope.$index,scope.row,2)" />
             </template>
           </pl-table-column>
-          <pl-table-column prop="TaskState" label="状态" align="center" width="100">
+          <pl-table-column prop="TaskState" label="状态" align="center" width="92">
             <template slot-scope="scope">
               <span v-if="scope.row.TaskState==1">待分配</span>
               <span v-if="scope.row.TaskState==2" class="warning">待购买</span>
