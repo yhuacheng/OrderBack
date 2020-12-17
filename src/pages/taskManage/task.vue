@@ -256,7 +256,7 @@
           <pl-table-column prop="Name" label="操作员" align="center"></pl-table-column>
           <pl-table-column prop="Name1" label="外派员" align="center" :show-overflow-tooltip='true'></pl-table-column>
           <pl-table-column prop="AmazonNumber" label="购买单号" align="center" width="163"></pl-table-column>
-          <pl-table-column prop="AddTime" label="填单时间" align="center" width="150" sortable></pl-table-column>
+          <pl-table-column prop="AddTime" label="填单时间" align="center" width="150" :sortable="true" :sort-method="sortByAddTime"></pl-table-column>
           <pl-table-column prop="DealIamge" label="交易截图" align="center">
             <template slot-scope="scope">
               <img style="width: 40px;height: 40px;" v-if="scope.row.DealIamge" :src="GLOBAL.IMG_URL+scope.row.DealIamge"
@@ -978,6 +978,13 @@
         countryList(params).then(res => {
           _this.countryData = res.list
         }).catch((e) => {})
+      },
+
+      //自定义的排序逻辑(因为时间格式问题 单位数未补0，所以需要自定义排序)
+      sortByAddTime(a, b) {
+        let num1 = new Date(a.AddTime).getTime();
+        let num2 = new Date(b.AddTime).getTime();
+        return num1 - num2;
       },
 
       //获取数据
